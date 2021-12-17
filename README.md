@@ -20,7 +20,8 @@ As creating the sources for both programs would take me ages, I decided to build
 I used python, although I do not have a lot of experience with it.
 
 ### Caveat
-As I started learning to play the violin, the generated files are restricted to the ambitus of the violin (1st position)
+* As I started learning to play the violin, the generated files are restricted to the ambitus of the violin (1st position)
+* I am living in Germany and my teacher is German, so I generate everything according to the German conventions (___b___ becomes ___h___, bes becomes ___b___)
 
 # The generator
 ## Requirements
@@ -54,6 +55,7 @@ optional arguments:
 
 
 ## Todo's
+- :x: add a CLI parameter not to translate notes in German
 - :x: add CLI parameter outputdir to config.json and merge CLI args with config
 - :x: output subdir's should go into config.json + CLI args
 - :x: add a parameter for the standardpitch, default = 443
