@@ -10,6 +10,7 @@ As I needed a lot of Images and mp3 files for my [Anki](https://apps.ankiweb.net
 
 ### Result of my search
 I ended up with [lilypond](https://lilypond.org) for generating images like this:
+
 ![image](./sample_output/kurzer-tonleiter-in-a-dur.cropped.png).
 
 Lilypond can also export midi-files, but those are not supported by Anki and lilypond uses the 440Hz standard pitch. Further research ended at [MuseScore](https://musescore.org), which offers a graphical interface and is capable of generating mp3-files out of your score, using whatever standard pitch you want to use.
@@ -53,14 +54,14 @@ optional arguments:
 
 
 ## Todo's
-- :white_check_mark: add CLI parameter outputdir to config.json and merge CLI args with config
-- :white_check_mark: output subdir's should go into config.json + CLI args
-- :white_check_mark: add a parameter for the standardpitch, default = 443
-- :white_check_mark: add a parameter to skip files that already exist
-- :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
-- :white_check_mark: parameterized (default: false) delete of ly and mscx files after processing them
-- :white_check_mark: add selection noten, tonleiter, intervalle
-- :white_check_mark: Split helper into a musical helper and a text helper
-- :white_check_mark: get name of template file from config
-- :white_check_mark: get template file name from config
+- :x: add CLI parameter outputdir to config.json and merge CLI args with config
+- :x: output subdir's should go into config.json + CLI args
+- :x: add a parameter for the standardpitch, default = 443
+- :x: add a parameter to skip files that already exist
+- :x: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
+- :x: parameterized (default: false) delete of ly and mscx files after processing them
+- :x: add selection noten, tonleiter, intervalle
+- :x: Split helper into a musical helper and a text helper
+- :x: get name of template file from config
+- :x: get template file name from config
 
