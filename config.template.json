@@ -1,0 +1,4 @@
+{
+  "lilypond": "[enter the lilypond executable here, remove the property if you don't use it]",
+  "musescore": "[enter the musescore executable here, remove the property if you don't use it]"
+}
