@@ -16,8 +16,6 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--config', '-c',
         type=open,
-        # action=__configFile,
-        # dest=__configFile,
         default='config.json',
         help='The name of the configuration file. [Default = \'json.config\']')
 

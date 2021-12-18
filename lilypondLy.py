@@ -1,10 +1,12 @@
 from os.path import abspath
 
+from configuration import Configuration
+
 
 class LilypondLy:
 
     #region private properties ################################################
-
+    __config: Configuration
     __melody = []
     __lyrics = []
     __key = 'c'
@@ -45,8 +47,8 @@ class LilypondLy:
     # end setTitle
 
     def writeToFile(self, filename: str) -> None:
-        # TODO get name of template file from config
-        with open('template.ly') as template:
+
+        with open(self.__config.lilypondTemplate) as template:
             contents = template.read()
             template.close()
         # end with
@@ -62,7 +64,8 @@ class LilypondLy:
 
     #region constructor #######################################################
 
-    def __init__(self, key: str, major: bool, timeSignature: str) -> None:
+    def __init__(self, config: Configuration, key: str, major: bool, timeSignature: str) -> None:
+        self.__config = config
         self.__key = key.lower()
         self.__timeSignature = timeSignature
         self.makeMoment = None

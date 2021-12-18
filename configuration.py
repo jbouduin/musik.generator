@@ -5,7 +5,6 @@ import pathlib
 from argparse import Namespace
 
 # TODO add CLI parameter outputdir to config.json and merge CLI args with config
-# TODO add a parameter for the standardpicht, default = 443
 # TODO add a parameter to skip files that already exist
 class Configuration:
 
@@ -106,6 +105,28 @@ class Configuration:
         return self.__process
     # end get
 
+    @property
+    def lilypondTemplate(self) -> str:
+        result: str = 'template.ly'
+        if ('templates' in self.__configuration):
+            if ('lilypond' in self.__configuration['templates']):
+                result = self.__configuration['templates']['lilypond']
+            #end if
+        #end if
+        return result
+    #end get lilypondTemplate(self)
+
+    @property
+    def musescoreTemplate(self) -> str:
+        result: str = 'template.mscx'
+        if ('templates' in self.__configuration):
+            if ('musescore' in self.__configuration['templates']):
+                result = self.__configuration['templates']['musescore']
+            #end if
+        #end if
+        return result
+    #end get lilypondTemplate(self)
+
     #endregion ################################################################
 
     #region public methods ####################################################
@@ -152,8 +173,12 @@ class Configuration:
             print('Process generated files : {0}'.format(self.process))
             print('Lilypond executable     : {0}'.format(
                 self.lilypondExecutable))
+            print('Lilypond template       : {0}'.format(
+                self.lilypondTemplate))
             print('Musescore executable    : {0}'.format(
                 self.musescoreExecutable))
+            print('Musescore template      : {0}'.format(
+                self.musescoreTemplate))
             print('Standard pitch          : {0} Hz.'.format(
                 self.standardPitch))
         # end if verbose
@@ -204,6 +229,20 @@ class Configuration:
             print('{0} is not a directory.'.format(self.__outputDir.name))
             result = False
         # end if-elif
+
+        if (self.verbose):
+            print('Checking template files')
+
+        if (self.lilypond == True and not os.path.exists(self.lilypondTemplate)):
+            print('Lilypond template file \'{0}\' does not exist'.format(self.lilypondTemplate))
+            result = False
+        #end if
+
+        if (self.musescore == True and not os.path.exists(self.musescoreTemplate)):
+            print('Musescore template file \'{0}\' does not exist'.format(
+                self.musescoreTemplate))
+            result = False
+        #end if
 
         if (self.verbose):
             print('Creating subdirectories')

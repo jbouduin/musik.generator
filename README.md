@@ -66,6 +66,6 @@ optional arguments:
 - :x: parameterized (default: false) delete of ly and mscx files after processing them
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
-- :x: get template file names from config
+- :white_check_mark: get template file names from config
 - :x: parameterized purge of existing out direcotry before generating
 

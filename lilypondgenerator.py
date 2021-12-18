@@ -19,7 +19,7 @@ class LilyPondGenerator:
             intervals = self.__helper.generateDurIntervalle(tonleiter)
             for interval in intervals:
                 title = self.__helper.getIntervallTitel(interval[0], tonleiter)
-                lyFile = LilypondLy(tonleiter, True, '9/8')
+                lyFile = LilypondLy(self.__config, tonleiter, True, '9/8')
                 lyFile.setTitle(title)
                 lyFile.makeMoment = '1/8'
                 lyFile.addNotes(
@@ -43,7 +43,7 @@ class LilyPondGenerator:
         for notes in allNotes:
             titel = self.__helper.getNoteTitel(notes)
 
-            lyFile = LilypondLy('C', True, '4/4')
+            lyFile = LilypondLy(self.__config, 'C', True, '4/4')
             lyFile.setTitle(titel)
             if (len(notes) == 2):
                 lyFile.makeMoment = '1/8'
@@ -100,7 +100,7 @@ class LilyPondGenerator:
                 tonleiter, eingestrichenes)
             titel = self.__helper.getDurtonleiterTitel(
                 tonleiter, eingestrichenes)
-            lyFile = LilypondLy(tonleiter, True, '4/4')
+            lyFile = LilypondLy(self.__config, tonleiter, True, '4/4')
             lyFile.setTitle(titel)
             lyFile.makeMoment = '1/8'
             melodyLine = []
@@ -160,7 +160,7 @@ class LilyPondGenerator:
             art = 'Mol'
         # end if-else
         titel = 'Generalvorzeichen {0}-{1}'.format(key, art)
-        lyFile = LilypondLy(key, major, '4/4')
+        lyFile = LilypondLy(self.__config, key, major, '4/4')
         lyFile.setTitle(titel)
         lyFile.addNotes(['s'])
         generatedFile = '{0}/{1}.ly'.format(

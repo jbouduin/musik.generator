@@ -72,9 +72,9 @@ class MuseScoreXml:
 
     #region constructor #######################################################
 
-    def __init__(self, config: Configuration, template: str) -> None:
+    def __init__(self, config: Configuration) -> None:
         self.__config = config
-        self.__museScore = ET.parse(template)
+        self.__museScore = ET.parse(config.musescoreTemplate)
         self.__museScoreRoot = self.__museScore.getroot()
         self.__museStaff = self.__museScoreRoot.find("./Score/Staff[@id='1']")
         self.__setStandardPitch()
