@@ -4,7 +4,6 @@ import subprocess
 
 from configuration import Configuration
 
-# TODO delete pdf and cropped.pdf lilypond generats as intermediate steps
 # TODO parameterized (default: false) delete of ly and mscx files after processing them
 class FileProcessor:
 

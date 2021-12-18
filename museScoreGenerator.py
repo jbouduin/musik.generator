@@ -46,7 +46,7 @@ class MuseScoreGenerator:
             intervals = self.__helper.generateDurIntervalle(tonleiter)
             for interval in intervals:
                 title = self.__helper.getIntervallTitel(interval[0], tonleiter)
-                museScore = MuseScoreXml('template.mscx')
+                museScore = MuseScoreXml(self.__config, 'template.mscx')
                 museScore.addTitle(title)
                 museVoice = museScore.addNewMeasureWithVoice()
                 museScore.addTimeSignatureToVoice(museVoice, 9, 8)
@@ -75,7 +75,7 @@ class MuseScoreGenerator:
         allNotes = self.__helper.getAllViolinNotes()
         for notes in allNotes:
             # TODO get template file name from config
-            museScore = MuseScoreXml('template.mscx')
+            museScore = MuseScoreXml(self.__config, 'template.mscx')
             titel = self.__helper.getNoteTitel(notes)
             museScore.addTitle(titel)
             museVoice = museScore.addNewMeasureWithVoice()
@@ -149,7 +149,7 @@ class MuseScoreGenerator:
         for _, (tonleiter, generalVorzeichen) in enumerate(self.__helper.generalvorzeichenDur.items()):
             asString = self.__helper.generateDurTonleiter(
                 tonleiter, eingestrichenes)
-            museScore = MuseScoreXml('template.mscx')
+            museScore = MuseScoreXml(self.__config, 'template.mscx')
             title = self.__helper.getDurtonleiterTitel(
                 tonleiter, eingestrichenes)
             museScore.addTitle(title)

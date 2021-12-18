@@ -5,7 +5,6 @@ import pathlib
 from argparse import Namespace
 
 # TODO add CLI parameter outputdir to config.json and merge CLI args with config
-# TODO output subdir's should go into config.json + CLI args
 # TODO add a parameter for the standardpicht, default = 443
 # TODO add a parameter to skip files that already exist
 class Configuration:
@@ -18,6 +17,8 @@ class Configuration:
     __lilypond: bool
     __musescore: bool
     __process: bool
+    __standardPitch: int
+    # TODO output subdir's should go into config.json + CLI args
     __lilypondDir = 'lilypond'
     __musescoreDir = 'musescore'
     __notenDir = 'noten'
@@ -96,6 +97,11 @@ class Configuration:
     # end get musescoreIntervalle
 
     @property
+    def standardPitch(self) -> int:
+        return self.__standardPitch
+    #end get standardPitch
+
+    @property
     def process(self) -> bool:
         return self.__process
     # end get
@@ -133,6 +139,8 @@ class Configuration:
                 self.__force = value
             elif (name == constants.argumentToItem(constants.argumentGenerateOnly)):
                 self.__process = not value
+            elif (name == constants.argumentToItem(constants.argumentStandardPitch)):
+                self.__standardPitch = value
         # end for
 
         if (self.verbose == True):
@@ -146,6 +154,8 @@ class Configuration:
                 self.lilypondExecutable))
             print('Musescore executable    : {0}'.format(
                 self.musescoreExecutable))
+            print('Standard pitch          : {0} Hz.'.format(
+                self.standardPitch))
         # end if verbose
 
         if (self.process == True):

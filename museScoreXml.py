@@ -1,11 +1,13 @@
 from typing import Any
 import xml.etree.ElementTree as ET
 
+from configuration import Configuration
+
 
 class MuseScoreXml:
 
     #region private properties ################################################
-
+    __config: Configuration
     __museScore: ET.ElementTree
     __museScoreRoot: Any
     __museStaff: Any
@@ -70,10 +72,12 @@ class MuseScoreXml:
 
     #region constructor #######################################################
 
-    def __init__(self, template: str) -> None:
+    def __init__(self, config: Configuration, template: str) -> None:
+        self.__config = config
         self.__museScore = ET.parse(template)
         self.__museScoreRoot = self.__museScore.getroot()
         self.__museStaff = self.__museScoreRoot.find("./Score/Staff[@id='1']")
+        self.__setStandardPitch()
     # end constructor
 
     #endregion ################################################################
@@ -106,5 +110,13 @@ class MuseScoreXml:
         return note
     # end addNoteToChord
 
+    def __setStandardPitch(self):
+        pitchElement = self.__museScoreRoot.find("./Score/Synthesizer/master/val[@id='3']")
+        if (self.__config.verbose == True):
+            print('setting standard pitch to {0}'.format(
+                self.__config.standardPitch))
+        #end if
+        pitchElement.text = str(self.__config.standardPitch)
+    # end __setStandardPitch
     #endregion ################################################################
 # end class

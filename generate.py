@@ -19,12 +19,11 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
         # action=__configFile,
         # dest=__configFile,
         default='config.json',
-        help='The name of the configuration file')
+        help='The name of the configuration file. [Default = \'json.config\']')
 
     # positional argument: what to generate musescore files
     parser.add_argument(
         '{0}'.format(constants.argumentTarget),
-        default='all',
         choices=['all', 'musescore', 'lilypond'],
         help='Type of files to generate'
     )
@@ -41,7 +40,7 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
         '--{0}'.format(constants.argumentOutputDir), '-o',
         type=pathlib.Path,
         default='out',
-        help='The output directory'
+        help='The output directory. [Default = \'.\out\']'
     )
 
     # skip converting files
@@ -49,6 +48,14 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
         '--{0}'.format(constants.argumentForce), '-f',
         action='store_true',
         help='Force creation of the output directory if it does not exist'
+    )
+
+    # standard picht (Kammerton)
+    parser.add_argument(
+        '--{0}'.format(constants.argumentStandardPitch), '-s',
+        type=int,
+        default=443,
+        help='The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]'
     )
 
     # verbose

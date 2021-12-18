@@ -50,21 +50,22 @@ optional arguments:
   --output OUTPUT, -o OUTPUT
                         The output directory
   --force, -f           Force creation of the output directory if it does not exist
+  --standard-pitch STANDARD_PITCH, -s STANDARD_PITCH
+                        The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]
   --verbose, -v         Verbose
 ```
 
 
 ## Todo's (in no particular order)
-- :x: add a CLI parameter not to translate notes in German
-- :x: add CLI parameter outputdir to config.json and merge CLI args with config
+- :x: add a parameter not to translate notes in German
+- :x: add CLI parameters tp config.json and merge CLI args at runtime
 - :x: output subdir's should go into config.json + CLI args
-- :x: add a parameter for the standardpitch, default = 443
+- :white_check_mark: add a parameter for the standardpitch, default = 443
 - :x: add a parameter to skip files that already exist
 - :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
 - :x: parameterized (default: false) delete of ly and mscx files after processing them
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
-- :x: get name of template file from config
-- :x: get template file name from config
+- :x: get template file names from config
 - :x: parameterized purge of existing out direcotry before generating
 
