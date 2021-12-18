@@ -21,7 +21,9 @@ I used python, although I do not have a lot of experience with it.
 
 ### Caveat
 * As I started learning to play the violin, the generated files are restricted to the ambitus of the violin (1st position)
-* I am living in Germany and my teacher is German, so I generate everything according to the German conventions (___b___ becomes ___h___, bes becomes ___b___)
+* I am living in Germany:
+  * everything is generated according to the German notation (___b___ becomes ___h___, ___bes___ becomes ___b___)
+  * the standard pitch is A4 = 443 Hz
 
 # The generator
 ## Requirements
@@ -58,7 +60,7 @@ optional arguments:
 
 ## Todo's (in no particular order)
 - :x: add a parameter not to translate notes in German
-- :x: add CLI parameters tp config.json and merge CLI args at runtime
+- :x: add CLI parameters to config.json and merge CLI args at runtime
 - :x: output subdir's should go into config.json + CLI args
 - :white_check_mark: add a parameter for the standardpitch, default = 443
 - :x: add a parameter to skip files that already exist
@@ -67,5 +69,5 @@ optional arguments:
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
 - :white_check_mark: get template file names from config
-- :x: parameterized purge of existing out direcotry before generating
+- :x: parameterized purge of existing out directory before generating (mutually exclusive with skip existing files parameter)
 
