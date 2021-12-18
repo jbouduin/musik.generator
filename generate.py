@@ -72,23 +72,32 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
 def main():
     parsed: argparse.Namespace = None
     parser = __buildArgumentParser()
+    configOk = False
     try:
         parsed = parser.parse_args()
         config = Configuration()
-        if (config.initialize(parsed) == True):
-            helper = Helper()
-            files = MusicGenerator(config, helper).generate()
-            if (config.process):
-                FileProcessor(config).processFiles(files)
-        else:
+        configOk = config.initialize(parsed)
+        if (configOk != True):
             parser.print_usage()
+        # end if
     except OSError as err:
         parser.print_usage()
         print('{0}: error: {1}: {2}'.format(parser.prog, err.strerror, err.filename))
     finally:
         if (parsed is not None and parsed.config is not None):
             parsed.config.close()
+    #end try-except-finally
 
+    if (configOk == True):
+        try:
+            helper = Helper()
+            files = MusicGenerator(config, helper).generate()
+            if (config.process):
+                FileProcessor(config).processFiles(files)
+        except BaseException as err:
+            print(err)
+        #end try except
+    #end if
 # end main
 
 
