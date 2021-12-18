@@ -15,7 +15,7 @@ class LilyPondGenerator:
 
     def generateIntervalle(self) -> list:
         result = []
-        for tonleiter in ['G', 'D', 'A', 'E']:
+        for tonleiter in ['G', 'C', 'D', 'A', 'E']:
             intervals = self.__helper.generateDurIntervalle(tonleiter)
             for interval in intervals:
                 title = self.__helper.getIntervallTitel(interval[0], tonleiter)
