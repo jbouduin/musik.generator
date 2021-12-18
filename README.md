@@ -54,16 +54,17 @@ optional arguments:
 ```
 
 
-## Todo's
+## Todo's (in no particular order)
 - :x: add a CLI parameter not to translate notes in German
 - :x: add CLI parameter outputdir to config.json and merge CLI args with config
 - :x: output subdir's should go into config.json + CLI args
 - :x: add a parameter for the standardpitch, default = 443
 - :x: add a parameter to skip files that already exist
-- :x: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
+- :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
 - :x: parameterized (default: false) delete of ly and mscx files after processing them
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
 - :x: get name of template file from config
 - :x: get template file name from config
+- :x: parameterized purge of existing out direcotry before generating
 

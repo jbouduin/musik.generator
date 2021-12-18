@@ -50,12 +50,21 @@ class FileProcessor:
     def __processLilyFiles(self, files: list) -> None:
         for f in files:
             print('Processing {0}-file {1}'.format(f[0], f[1]), end=' ')
-            f[1] = f[1].replace('\\', '/')
+            # check if it works without this f[1] = f[1].replace('\\', '/')
             finished = subprocess.run(
                 [self.__config.lilypondExecutable, '-o', os.path.dirname(f[1]), f[1]], capture_output=True)
             print('->', self.__returnCodeToString(finished.returncode))
-            if (self.__config.verbose):
+            if (finished.returncode != 0):
+                print(finished.stderr)
                 print(finished.stdout)
+            #end if
+            if (self.__config.verbose and finished.returncode == 0):
+                print(finished.stdout)
+            #end if
+            pdfFile = f[1].replace(".ly", ".pdf")
+            self.__deleteFile(pdfFile)
+            croppedPdfFile = f[1].replace(".ly", ".cropped.pdf")
+            self.__deleteFile(croppedPdfFile)
         # end for
     # end processLilyFiles
 
@@ -64,7 +73,7 @@ class FileProcessor:
             print('Processing {0}-file {1}'.format(f[0], f[1]), end=' ')
             mp3 = f[1].replace('\\', '/').replace('mscx', 'mp3')
             sys.stdout.flush()
-            # leider funktioniert musescore -j nicht wenn es aus python gestartet wird
+            # leider funktioniert 'musescore -j' nicht wenn es aus python gestartet wird
             # also machen wir eine nach dem anderen
             finished = subprocess.run(
                 [self.__config.musescoreExecutable, '-o', mp3, f[1]])
@@ -74,6 +83,19 @@ class FileProcessor:
         # end for
     # end processMuseFiles
 
+    def __deleteFile(self, filename: str):
+        if (self.__config.verbose):
+            print('Deleting {0}'.format(filename))
+        #end if
+        try:
+            os.remove(filename)
+        except OSError as err:
+            print('Error deleting {0}'.format(filename))
+            print(err)
+        if (self.__config.verbose):
+            print('{0} deleted'.format(filename))
+        #end if
+    #end deleteFile
     #endregion ################################################################
 
 # end class
