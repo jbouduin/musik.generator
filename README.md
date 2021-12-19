@@ -36,7 +36,7 @@ I used python, although I do not have a lot of experience with it.
 * run `generate.py`
 
 ```sh
-usage: generate.py [-h] [--config CONFIG] [--generate-only] [--output OUTPUT] [--force] [--verbose] {all,musescore,lilypond}
+usage: generate.py [-h] [--config CONFIG] [--generate-only] [--output OUTPUT] [--force] [--standard-pitch STANDARD_PITCH] [--verbose] {all,musescore,lilypond}
 
 Generate and process lilypond and musescore files.
 
@@ -47,10 +47,10 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --config CONFIG, -c CONFIG
-                        The name of the configuration file
+                        The name of the configuration file. [Default = 'json.config']
   --generate-only, -g   Do not process generated files
   --output OUTPUT, -o OUTPUT
-                        The output directory
+                        The output directory. If not provided reading the value from the configuratiomn file. [Default = '.\out']
   --force, -f           Force creation of the output directory if it does not exist
   --standard-pitch STANDARD_PITCH, -s STANDARD_PITCH
                         The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]
@@ -59,9 +59,9 @@ optional arguments:
 
 
 ## Todo's (in no particular order)
-- :x: add a parameter not to translate notes in German
+- :x: add a parameter not to translate notes in German (or simply add a language parameter, defaulting to 'de')
 - :x: add CLI parameters to config.json and merge CLI args at runtime
-- :x: output subdir's should go into config.json + CLI args
+- :white_check_mark: output subdir's should go into config.json
 - :white_check_mark: add a parameter for the standardpitch, default = 443
 - :x: add a parameter to skip files that already exist
 - :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
@@ -70,4 +70,5 @@ optional arguments:
 - :x: Split helper into a musical helper and a text helper
 - :white_check_mark: get template file names from config
 - :x: parameterized purge of existing out directory before generating (mutually exclusive with skip existing files parameter)
+- :x: translate variables and methods to english
 

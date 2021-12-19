@@ -4,5 +4,13 @@
   "templates": {
     "lilypond": "template.ly",
     "musescore": "template.mscx"
+  },
+  "output": {
+    "root": "out",
+    "lilypond": "lilypond",
+    "musescore": "musescore",
+    "tonleiter": "tonleiter",
+    "intervalle": "intervalle",
+    "noten": "noten"
   }
 }

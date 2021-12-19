@@ -4,7 +4,7 @@ import json
 import pathlib
 from argparse import Namespace
 
-# TODO add CLI parameter outputdir to config.json and merge CLI args with config
+
 # TODO add a parameter to skip files that already exist
 class Configuration:
 
@@ -17,12 +17,6 @@ class Configuration:
     __musescore: bool
     __process: bool
     __standardPitch: int
-    # TODO output subdir's should go into config.json + CLI args
-    __lilypondDir = 'lilypond'
-    __musescoreDir = 'musescore'
-    __notenDir = 'noten'
-    __tonleiterdir = 'tonleiter'
-    __intervalledir = 'intervalle'
     #endregion ################################################################
 
     #region getters ###########################################################
@@ -67,38 +61,61 @@ class Configuration:
 
     @property
     def lilypondNoten(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__lilypondDir, self.__notenDir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__lilypondDir,
+            self.__notenDir
+        )
     # end get lilypondNoten
 
     @property
     def lilypondTonleiter(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__lilypondDir, self.__tonleiterdir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__lilypondDir,
+            self.__tonleiterDir
+        )
     # end get lilypondTonleiter
 
     @property
     def lilypondIntervalle(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__lilypondDir, self.__intervalledir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__lilypondDir,
+            self.__intervalleDir
+        )
     # end get lilypondIntervalle
 
     @property
     def musescoreNoten(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__musescoreDir, self.__notenDir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__musescoreDir,
+            self.__notenDir
+        )
     # end get musescoreNoten
 
     @property
     def musescoreTonleiter(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__musescoreDir, self.__tonleiterdir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__musescoreDir,
+            self.__tonleiterDir
+        )
     # end get musescoreTonleiter
 
     @property
     def musescoreIntervalle(self) -> str:
-        return '{0}/{1}/{2}'.format(self.rootOutput, self.__musescoreDir, self.__intervalledir)
+        return '{0}/{1}/{2}'.format(
+            self.rootOutput,
+            self.__musescoreDir,
+            self.__intervalleDir)
     # end get musescoreIntervalle
 
     @property
     def standardPitch(self) -> int:
         return self.__standardPitch
-    #end get standardPitch
+    # end get standardPitch
 
     @property
     def process(self) -> bool:
@@ -111,10 +128,10 @@ class Configuration:
         if ('templates' in self.__configuration):
             if ('lilypond' in self.__configuration['templates']):
                 result = self.__configuration['templates']['lilypond']
-            #end if
-        #end if
+            # end if
+        # end if
         return result
-    #end get lilypondTemplate(self)
+    # end get lilypondTemplate(self)
 
     @property
     def musescoreTemplate(self) -> str:
@@ -122,10 +139,67 @@ class Configuration:
         if ('templates' in self.__configuration):
             if ('musescore' in self.__configuration['templates']):
                 result = self.__configuration['templates']['musescore']
-            #end if
-        #end if
+            # end if
+        # end if
         return result
-    #end get lilypondTemplate(self)
+    # end get lilypondTemplate(self)
+
+    #endregion ################################################################
+
+    # region private getters
+    @property
+    def __outputRoot(self) -> str:
+        result = 'out'
+        if ('output' in self.__configuration):
+            if ('root' in self.__configuration['output']):
+                result = self.__configuration['output']['root']
+        return result
+    # end get __outputRoot
+
+    @property
+    def __lilypondDir(self) -> str:
+        result = 'lilypond'
+        if ('output' in self.__configuration):
+            if ('lilypond' in self.__configuration['output']):
+                result = self.__configuration['output']['lilypond']
+        return result
+    # end get __lilypondDir
+
+    @property
+    def __musescoreDir(self) -> str:
+        result = 'musescore'
+        if ('output' in self.__configuration):
+            if ('musescore' in self.__configuration['output']):
+                result = self.__configuration['output']['musescore']
+        return result
+    # end get __lilypondDir
+
+    @property
+    def __notenDir(self) -> str:
+        result = 'noten'
+        if ('output' in self.__configuration):
+            if ('noten' in self.__configuration['output']):
+                result = self.__configuration['output']['noten']
+        return result
+    # end get __lilypondDir
+
+    @property
+    def __tonleiterDir(self) -> str:
+        result = 'tonleiter'
+        if ('output' in self.__configuration):
+            if ('tonleiter' in self.__configuration['output']):
+                result = self.__configuration['output']['tonleiter']
+        return result
+    # end get __lilypondDir
+
+    @property
+    def __intervalleDir(self) -> str:
+        result = 'intervalle'
+        if ('output' in self.__configuration):
+            if ('intervalle' in self.__configuration['output']):
+                result = self.__configuration['output']['intervalle']
+        return result
+    # end get __lilypondDir
 
     #endregion ################################################################
 
@@ -163,6 +237,13 @@ class Configuration:
             elif (name == constants.argumentToItem(constants.argumentStandardPitch)):
                 self.__standardPitch = value
         # end for
+
+        if (self.__outputDir is None):
+            if (self.verbose == True):
+                print('No output dir on CLI, using value from configuration file')
+            # end if
+        self.__outputDir = pathlib.Path(self.__outputRoot)
+        # end if
 
         if (self.verbose == True):
             print('Verbose                 : {0}'.format(self.verbose))
@@ -234,15 +315,16 @@ class Configuration:
             print('Checking template files')
 
         if (self.lilypond == True and not os.path.exists(self.lilypondTemplate)):
-            print('Lilypond template file \'{0}\' does not exist'.format(self.lilypondTemplate))
+            print('Lilypond template file \'{0}\' does not exist'.format(
+                self.lilypondTemplate))
             result = False
-        #end if
+        # end if
 
         if (self.musescore == True and not os.path.exists(self.musescoreTemplate)):
             print('Musescore template file \'{0}\' does not exist'.format(
                 self.musescoreTemplate))
             result = False
-        #end if
+        # end if
 
         if (self.verbose):
             print('Creating subdirectories')
@@ -257,6 +339,7 @@ class Configuration:
             self.__createSubdirectories(
                 [self.musescoreIntervalle, self.musescoreNoten, self.musescoreTonleiter])
         # end if
+
         return result
     # end __setCommandLineToConfig
 

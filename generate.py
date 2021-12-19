@@ -37,8 +37,7 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--{0}'.format(constants.argumentOutputDir), '-o',
         type=pathlib.Path,
-        default='out',
-        help='The output directory. [Default = \'.\out\']'
+        help='The output directory. If not provided reading the value from the configuratiomn file. [Default = \'.\out\']'
     )
 
     # skip converting files
