@@ -51,7 +51,6 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--{0}'.format(constants.argumentStandardPitch), '-s',
         type=int,
-        default=443,
         help='The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]'
     )
 

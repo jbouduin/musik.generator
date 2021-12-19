@@ -23,7 +23,7 @@ I used python, although I do not have a lot of experience with it.
 * As I started learning to play the violin, the generated files are restricted to the ambitus of the violin (1st position)
 * I am living in Germany:
   * everything is generated according to the German notation (___b___ becomes ___h___, ___bes___ becomes ___b___)
-  * the standard pitch is A4 = 443 Hz
+  * the default standard pitch is A4 = 443 Hz
 
 # The generator
 ## Requirements
@@ -59,18 +59,18 @@ optional arguments:
 
 
 ## Todo's (in no particular order)
-- :x: add a language parameter defaulting to 'de'
-- :x: add CLI parameter -s to config.json and merge CLI args at runtime
 - :white_check_mark: output subdir's should go into config.json
 - :white_check_mark: add a parameter for the standardpitch, default = 443
-- :x: add a parameter --purge, -p to skip files that already exist
 - :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
+- :white_check_mark: get template file names from config
+- :white_check_mark: translate variables, methods and comments to english
+- :white_check_mark: add CLI parameter --standard-pitch, -s to config.json and merge CLI args at runtime
+- :x: parameterized (--purge, -p) purge of existing out directory before generating
+- :x: add a parameter to skip files that already exist (mutually exclusive with purge parameter)
+- :x: add a language parameter defaulting to 'de'
 - :x: add a parameter which prevents deleting the intermediate files
 - :x: parameterized (default: false) delete of ly and mscx files after processing them
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
-- :white_check_mark: get template file names from config
-- :x: parameterized purge of existing out directory before generating (mutually exclusive with skip existing files parameter)
-- :white_check_mark: translate variables, methods and comments to english
 
 

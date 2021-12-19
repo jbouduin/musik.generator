@@ -16,7 +16,7 @@ class Configuration:
     __generateLilypond: bool
     __generateMusescore: bool
     __process: bool
-    __standardPitch: int
+    __standardPitch: int = None
     #endregion ################################################################
 
     #region getters ###########################################################
@@ -242,13 +242,22 @@ class Configuration:
             if (self.verbose == True):
                 print('No output dir on CLI, using value from configuration file')
             # end if
-        self.__outputDir = pathlib.Path(self.__outputRoot)
+            self.__outputDir = pathlib.Path(self.__outputRoot)
+        # end if
+
+        if (self.__standardPitch is None):
+            if ('standardPitch' in self.__configuration):
+                self.__standardPitch = self.__configuration['standardPitch']
+            else:
+                self.__standardPitch = 443
         # end if
 
         if (self.verbose == True):
             print('Verbose                 : {0}'.format(self.verbose))
-            print('Generate lilypond files : {0}'.format(self.generateLilypond))
-            print('Generate musescore files: {0}'.format(self.generateMusescore))
+            print('Generate lilypond files : {0}'.format(
+                self.generateLilypond))
+            print('Generate musescore files: {0}'.format(
+                self.generateMusescore))
             print('Outputdir               : {0}'.format(
                 self.__outputDir.name))
             print('Process generated files : {0}'.format(self.process))

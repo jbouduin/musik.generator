@@ -5,6 +5,7 @@
     "lilypond": "template.ly",
     "musescore": "template.mscx"
   },
+  "standardPitch": 443,
   "output": {
     "root": "out",
     "lilypond": "lilypond",
