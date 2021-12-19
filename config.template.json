@@ -9,8 +9,8 @@
     "root": "out",
     "lilypond": "lilypond",
     "musescore": "musescore",
-    "tonleiter": "tonleiter",
-    "intervalle": "intervalle",
-    "noten": "noten"
+    "scales": "tonleiter",
+    "intervals": "intervalle",
+    "notes": "noten"
   }
 }

@@ -1,4 +1,3 @@
-from os.path import abspath
 from configuration import Configuration
 from helper import Helper
 from lilypondLy import LilypondLy
@@ -13,12 +12,12 @@ class LilyPondGenerator:
 
     #region public methods ####################################################
 
-    def generateIntervalle(self) -> list:
+    def generateIntervals(self) -> list:
         result = []
         for tonleiter in ['G', 'C', 'D', 'A', 'E']:
-            intervals = self.__helper.generateDurIntervalle(tonleiter)
+            intervals = self.__helper.generateMajorIntervals(tonleiter)
             for interval in intervals:
-                title = self.__helper.getIntervallTitel(interval[0], tonleiter)
+                title = self.__helper.getIntervalTitle(interval[0], tonleiter)
                 lyFile = LilypondLy(self.__config, tonleiter, True, '9/8')
                 lyFile.setTitle(title)
                 lyFile.makeMoment = '1/8'
@@ -28,7 +27,7 @@ class LilyPondGenerator:
                     interval[1], True), self.__helper.getGermanNotation(interval[2], True))])
 
                 generatedFile = '{0}/{1}.ly'.format(
-                    self.__config.lilypondIntervalle,
+                    self.__config.lilypondIntervalsDirectory,
                     title.replace(' ', '-')).lower()
                 lyFile.writeToFile(generatedFile)
                 result.append(['Lilypond', generatedFile])
@@ -37,14 +36,14 @@ class LilyPondGenerator:
         return result
     # end generateIntervals
 
-    def generateNoten(self) -> list:
+    def generateNotes(self) -> list:
         result = []
         allNotes = self.__helper.getAllViolinNotes()
         for notes in allNotes:
-            titel = self.__helper.getNoteTitel(notes)
+            title = self.__helper.getNoteTitle(notes)
 
             lyFile = LilypondLy(self.__config, 'C', True, '4/4')
-            lyFile.setTitle(titel)
+            lyFile.setTitle(title)
             if (len(notes) == 2):
                 lyFile.makeMoment = '1/8'
             else:
@@ -64,21 +63,21 @@ class LilyPondGenerator:
             # end for
 
             generatedFile = '{0}/{1}.ly'.format(
-                self.__config.lilypondNoten,
-                titel.replace(' ', '-')).lower()
+                self.__config.lilypondNotesDirectory,
+                title.replace(' ', '-')).lower()
             lyFile.writeToFile(generatedFile)
             result.append(['Lilypond', generatedFile])
         # end for
         return result
-    # end generateNoten
+    # end generateNotes
 
-    def generateTonleiter(self) -> list:
+    def generateScales(self) -> list:
         return [
-            *self.__generateDurtonleiter(True),
-            *self.__generateDurtonleiter(False),
-            *self.__generateAllGeneralVorzeichen()
+            *self.__generateMajorScales(True),
+            *self.__generateMajorScales(False),
+            *self.__generateAllScaleSignatures()
         ]
-    # end generateTonleiter
+    # end generateScales
 
     #endregion ################################################################
 
@@ -93,13 +92,13 @@ class LilyPondGenerator:
 
     #region private methods ###################################################
 
-    def __generateDurtonleiter(self, eingestrichenes: bool) -> list:
+    def __generateMajorScales(self, startInSmallOctave: bool) -> list:
         result = list()
-        for _, tonleiter in enumerate(self.__helper.generalvorzeichenDur.keys()):
-            asString = self.__helper.generateDurTonleiter(
-                tonleiter, eingestrichenes)
-            titel = self.__helper.getDurtonleiterTitel(
-                tonleiter, eingestrichenes)
+        for _, tonleiter in enumerate(self.__helper.majorScaleSignatures.keys()):
+            asString = self.__helper.generateMajorScale(
+                tonleiter, startInSmallOctave)
+            titel = self.__helper.getMajorScaleTitle(
+                tonleiter, startInSmallOctave)
             lyFile = LilypondLy(self.__config, tonleiter, True, '4/4')
             lyFile.setTitle(titel)
             lyFile.makeMoment = '1/8'
@@ -130,30 +129,30 @@ class LilyPondGenerator:
                 lyFile.addLyrics(noteLine)
             # end if
             generatedFile = '{0}/{1}.ly'.format(
-                self.__config.lilypondTonleiter,
+                self.__config.lilypondScalesDirectory,
                 titel.replace(' ', '-')).lower()
             lyFile.writeToFile(generatedFile)
             result.append(['Lilypond', generatedFile])
         # end for
         return result
-    # end generateDurTonleiterExt
+    # end __generateMajorScales
 
-    def __generateAllGeneralVorzeichen(self) -> list:
+    def __generateAllScaleSignatures(self) -> list:
         result = []
-        for _, tonleiter in enumerate(self.__helper.generalvorzeichenDur.keys()):
+        for _, tonleiter in enumerate(self.__helper.majorScaleSignatures.keys()):
             result.append(
-                ['Lilypond', self.__generateGeneralVorzeichen(tonleiter, True)])
+                ['Lilypond', self.__generateScaleSignature(tonleiter, True)])
         # end for
 
-        for _, tonleiter in enumerate(self.__helper.generalvorzeichenMol.keys()):
+        for _, tonleiter in enumerate(self.__helper.minorScalesSignatures.keys()):
             result.append(
-                ['Lilypond', self.__generateGeneralVorzeichen(tonleiter, False)])
+                ['Lilypond', self.__generateScaleSignature(tonleiter, False)])
         # end for
 
         return result
-    # end generateGeneralVorzeichen
+    # end __generateAllScaleSignatures
 
-    def __generateGeneralVorzeichen(self, key: str, major: bool) -> str:
+    def __generateScaleSignature(self, key: str, major: bool) -> str:
         if (major == True):
             art = 'Dur'
         else:
@@ -164,7 +163,7 @@ class LilyPondGenerator:
         lyFile.setTitle(titel)
         lyFile.addNotes(['s'])
         generatedFile = '{0}/{1}.ly'.format(
-            self.__config.lilypondTonleiter,
+            self.__config.lilypondScalesDirectory,
             titel.replace(' ', '-')).lower()
         lyFile.writeToFile(generatedFile)
 

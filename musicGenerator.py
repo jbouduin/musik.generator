@@ -17,22 +17,22 @@ class MusicGenerator:
         lilypondResult = []
         musescoreResult = []
 
-        if(self.__configuration.lilypond):
+        if(self.__configuration.generateLilypond):
             lilypondGenerator = LilyPondGenerator(
                 self.__configuration, self.__helper)
             lilypondResult = [
-                *lilypondGenerator.generateIntervalle(),
-                *lilypondGenerator.generateNoten(),
-                *lilypondGenerator.generateTonleiter()
+                *lilypondGenerator.generateIntervals(),
+                *lilypondGenerator.generateNotes(),
+                *lilypondGenerator.generateScales()
             ]
 
-        if (self.__configuration.musescore):
+        if (self.__configuration.generateMusescore):
             museScoreGenerator = MuseScoreGenerator(
                 self.__configuration, self.__helper)
             musescoreResult = [
-                *museScoreGenerator.generateIntervalle(),
-                *museScoreGenerator.generateNoten(),
-                *museScoreGenerator.generateTonleiter()
+                *museScoreGenerator.generateIntervals(),
+                *museScoreGenerator.generateNotes(),
+                *museScoreGenerator.generateScales()
             ]
 
         return [

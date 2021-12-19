@@ -18,8 +18,8 @@ class Helper:
     # auf Deutsch H5 / h''
     __highestnote = "b''"
 
-    # Generalvorzeichen in den Durtonleitern
-    __generalvorzeichenDur = dict([
+    # Key signatures for Major scales
+    __majorScalesSignatures = dict([
         ('C', 0),
         ('G', 1),
         ('D', 2),
@@ -35,8 +35,8 @@ class Helper:
         ('F', -1)
     ])
 
-    # Generalvorzeichen in den Moltonleitern
-    __generalvorzeichenMol = dict([
+    # Key signatures for Major scales
+    __minorScalesSignatures = dict([
         ('A', 0),
         ('E', 1),
         ('B', 2),  # Deutsch: H
@@ -52,8 +52,8 @@ class Helper:
         ('D', 1)
     ])
 
-    # intervalle: Schlüssel ist die Anzahl an Halbtonschritte
-    __intervalle = dict([
+    # intervals dictionary: Key is the number of halftones
+    __intervals = dict([
         (0, 'Reine Prim'),
         (1, 'Kleine Sekunde'),
         (2, 'Große Sekunde'),
@@ -68,23 +68,23 @@ class Helper:
         (12, 'Reine Oktave')
     ])
 
-    # intervalle in Halbtöne in den Durtonleiter
-    __durtonleiterIntervalle = [2, 2, 1, 2, 2, 2, 1]
+    # intervals from the Major scale
+    __majorScaleIntervals = [2, 2, 1, 2, 2, 2, 1]
 
-    # Noten verwendet um einen Durtonleiter mit Kreuze zu generieren
-    __durTonleiterNoten = ['C', 'Cis', 'D', 'Dis', 'E',
+    # Notes used to generate a major scale with 0 to 5 ♯'s
+    __majorScaleNotes0to5Sharps = ['C', 'Cis', 'D', 'Dis', 'E',
                     'F', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
-    # Fis-Dur soll Eis verwenden statt F
-    __durTonleiterNoten6 = ['C', 'Cis', 'D', 'Dis', 'E',
+    # Fis-Major (6♯) should use Eis instead of F
+    __majorScaleNotes6Sharps = ['C', 'Cis', 'D', 'Dis', 'E',
                      'Eis', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
-    # Noten verwendet um einen Durtonleiter mit bemols zu generieren
-    __molTonleiterNoten = ['C', 'Des', 'D', "Es", "E",
+    # Notes used to generate a major scale with 0 to 5 ♭'s
+    __majorScaleNotes0to5Flats = ['C', 'Des', 'D', "Es", "E",
                     "F", "Ges", "G", "As", "A", "Bes", "B"]
-    # Ges-Dur soll Ces verwenden, statt B
-    __molTonleiterNoten6 = ['C', 'Des', 'D', "Es", "E",
+    # Ges-Dur (6♭) soll Ces verwenden, statt B
+    __majorScaleNotes6Flats = ['C', 'Des', 'D', "Es", "E",
                      "F", "Ges", "G", "As", "A", "Bes", "Ces"]
 
-    # chromatische tonleiter mit enharmonische Töne (ohne doppelte Versetzungzeichen)
+    # chromatic scale with enharmonics, but without double sharp and double flats
     __chromatic = [
         ['C'],
         ['Cis', 'Des'],
@@ -100,61 +100,61 @@ class Helper:
         ['B', 'Ces']
     ]
 
-    # halbtone in eine oktave
-    __oktave = 12
+    # halftones in an octave
+    __octave = 12
 
     #endregion ################################################################
 
     #region getters ###########################################################
 
     @property
-    def durtonleiterIntervalle(self) -> list:
-        return self.__durtonleiterIntervalle
-    #end getter durtonleiterIntervalle
+    def majorScaleIntervals(self) -> list:
+        return self.__majorScaleIntervals
+    #end getter majorScaleIntervals
 
     @property
-    def generalvorzeichenDur(self) -> dict:
-        return self.__generalvorzeichenDur
-    #end getter generalvorzeichenDur
+    def majorScaleSignatures(self) -> dict:
+        return self.__majorScalesSignatures
+    #end getter majorScaleSignatures
 
     @property
-    def generalvorzeichenMol(self) -> dict:
-        return self.__generalvorzeichenMol
-    #end getter generalvorzeichenMol
+    def minorScalesSignatures(self) -> dict:
+        return self.__minorScalesSignatures
+    #end getter minorScalesSignatures
 
     #endregion ################################################################
 
     #region public methods ####################################################
 
-    def generateDurIntervalle(self, tonleiter: str) -> list:
+    def generateMajorIntervals(self, tonleiter: str) -> list:
         result = []
-        tonesToUse = self.__getDurTonesToUse(tonleiter)
+        tonesToUse = self.__getMajorTonesToUse(tonleiter)
         firstNoteIndex = self.__getLowestNote(tonesToUse, tonleiter, True)
         firstNote = tonesToUse[firstNoteIndex]
         noteIndex = firstNoteIndex
         totalInterval = 0
-        for interval in [0, *self.__durtonleiterIntervalle]:
+        for interval in [0, *self.__majorScaleIntervals]:
             noteIndex = noteIndex + interval
             totalInterval = totalInterval + interval
-            name = self.__intervalle[totalInterval]
+            name = self.__intervals[totalInterval]
             if (noteIndex <= len(tonesToUse)):
                 result.append([name, firstNote, tonesToUse[noteIndex]])
         # end for
 
         return result
-    # end generateIntervalle
+    # end generateMajorIntervals
 
-    def generateDurTonleiter(self, tonleiter: str, eingestriches: bool = False) -> list:
-        tonesToUse = self.__getDurTonesToUse(tonleiter)
-        noteIndex = self.__getLowestNote(tonesToUse, tonleiter, eingestriches)
+    def generateMajorScale(self, scale: str, startInSmallOctave: bool = False) -> list:
+        tonesToUse = self.__getMajorTonesToUse(scale)
+        noteIndex = self.__getLowestNote(tonesToUse, scale, startInSmallOctave)
         result = [tonesToUse[noteIndex]]
         # print(noteIndex, tonesToUse[noteIndex], tonesToUse)
         totalInterval = 0
         while True:
-            for interval in self.__durtonleiterIntervalle:
+            for interval in self.__majorScaleIntervals:
                 noteIndex = noteIndex + interval
                 totalInterval = totalInterval + interval
-                if ((noteIndex >= len(tonesToUse)) or (eingestriches == True and totalInterval > 12)):
+                if ((noteIndex >= len(tonesToUse)) or (startInSmallOctave == True and totalInterval > 12)):
                     break
                 result.append(tonesToUse[noteIndex])
             # end for
@@ -162,44 +162,44 @@ class Helper:
                 break
         # end while
         return result
-    # end generateDurTonleiter
+    # end generateMajorScale
 
     def getAllViolinNotes(self) -> list:
         result = []
-        amEnde = False
+        finished = False
         suffix = ''
         index = self.__chromatic.index([self.__lowestnote.upper()])
-        while not amEnde:
-            eintrag = []
+        while not finished:
+            entry = []
             for note in self.__chromatic[index]:
                 if (note == 'Ces'):
                     suffix = suffix + "'"
                 #end if
                 resultNote = note.lower() + suffix
                 if (resultNote == self.__highestnote):
-                    amEnde = True
+                    finished = True
                 #end if
-                eintrag.append(resultNote)
+                entry.append(resultNote)
             index = index + 1
             if (index == len(self.__chromatic)):
                 index = 0
 
-            result.append(eintrag)
+            result.append(entry)
         #end while
         return result
     #end getAllViolinNotes
 
-    def getDurtonleiterTitel(self, tonleiter: str, eingestrichenes: bool) -> str:
-        if (eingestrichenes == True):
+    def getMajorScaleTitle(self, scale: str, startInSmallOctave: bool) -> str:
+        if (startInSmallOctave == True):
             titel = 'Kurzer Tonleiter in {0}-Dur'.format(
-                self.getGermanNotation(tonleiter))
+                self.getGermanNotation(scale))
         else:
             titel = 'Ganzer Tonleiter auf der Violine in {0}-Dur'.format(
-                self.getGermanNotation(tonleiter))
+                self.getGermanNotation(scale))
         return titel
-    # end getDurtonleiterTitel
+    # end getMajorScaleTitle
 
-    def getGermanNotation(self, org: str, stripTonleiter: bool = False, oktaveNumerisch: bool = False) -> str:
+    def getGermanNotation(self, org: str, stripOctave: bool = False, oktaveNumeric: bool = False) -> str:
         result = org
         if (org.startswith('Bes')):
             result = org.replace('Bes', 'B')
@@ -210,32 +210,32 @@ class Helper:
         elif (org.startswith('b')):
             result = org.replace('b', 'h')
 
-        if (stripTonleiter == True):
+        if (stripOctave == True):
             result = result.strip("'")
-        elif (oktaveNumerisch == True):
-            result = self.__stricheToNummer(result)
+        elif (oktaveNumeric == True):
+            result = self.__toNumericOctave(result)
 
         return result
     # end getGermanNotation
 
-    def getIntervallTitel(self, intervall: str, tonleiter: str) -> str:
+    def getIntervalTitle(self, interval: str, scale: str) -> str:
         return '{0} in {1}-Dur vom Grundton'.format(
-            intervall,
-            self.getGermanNotation(tonleiter))
-    # end getIntervallTitle
+            interval,
+            self.getGermanNotation(scale))
+    # end getIntervalTitle
 
-    def getNoteTitel(self, noten: list) -> str:
+    def getNoteTitle(self, notes: list) -> str:
         result = ''
-        if (len(noten) == 1):
+        if (len(notes) == 1):
             result = 'Note {0}'.format(
-                self.getGermanNotation(noten[0], False, True).lower())
+                self.getGermanNotation(notes[0], False, True).lower())
         else:
             result = 'Note {0}-{1}'.format(
-                self.getGermanNotation(noten[0], False, True).lower(),
-                self.getGermanNotation(noten[1], False, True).lower())
+                self.getGermanNotation(notes[0], False, True).lower(),
+                self.getGermanNotation(notes[1], False, True).lower())
         #end if-else
         return result
-    #end getNoteTitel
+    #end getNoteTitle
 
     #endregion ################################################################
 
@@ -257,9 +257,9 @@ class Helper:
         lilypondNote = ''
         suffix = ''
         if (is6 == True):
-            chromaticToUse = self.__durTonleiterNoten6
+            chromaticToUse = self.__majorScaleNotes6Sharps
         else:
-            chromaticToUse = self.__durTonleiterNoten
+            chromaticToUse = self.__majorScaleNotes0to5Sharps
         while lilypondNote != "b''":
             increment = toneLoop % 12
             note = chromaticToUse[increment].lower()
@@ -272,7 +272,7 @@ class Helper:
 
         # print('istones:', len(result), result)
         return result
-    # end fillIsTones
+    # end __fillIsTones
 
     def __fillEsTones(self, is6: bool) -> list:
         result = []
@@ -280,9 +280,9 @@ class Helper:
         lilypondNote = ''
         suffix = ''
         if (is6 == True):
-            chromaticToUse = self.__molTonleiterNoten6
+            chromaticToUse = self.__majorScaleNotes6Flats
         else:
-            chromaticToUse = self.__molTonleiterNoten
+            chromaticToUse = self.__majorScaleNotes0to5Flats
 
         while lilypondNote != "b''" and lilypondNote != "ces'''":
             increment = toneLoop % 12
@@ -297,50 +297,50 @@ class Helper:
 
         # print('estones:', len(result), result)
         return result
-    # end fillIsTones
+    # end __fillEsTones
 
-    def __getDurTonesToUse(self, tonleiter: str) -> list:
-        generalVorzeichen = self.__generalvorzeichenDur[tonleiter]
-        if (generalVorzeichen >= 0):
-            if (generalVorzeichen == 6):
+    def __getMajorTonesToUse(self, scale: str) -> list:
+        signature = self.__majorScalesSignatures[scale]
+        if (signature >= 0):
+            if (signature == 6):
                 tonesToUse = self.__isTones6
             else:
                 tonesToUse = self.__isTones
         else:
-            if (generalVorzeichen == -6):
+            if (signature == -6):
                 tonesToUse = self.__esTones6
             else:
                 tonesToUse = self.__esTones
         # end if-else
         return tonesToUse
-    # end getDurTonesToUse
+    # end __getMajorTonesToUse
 
-    def __getLowestNote(self, tones: list, tonleiter: str, eingestrichenes: bool = False) -> int:
+    def __getLowestNote(self, tones: list, scale: str, startInSmallOctave: bool = False) -> int:
         result = 0
-        low = str(tonleiter).lower()
+        low = str(scale).lower()
         if (low in tones):
             result = tones.index(low)
         else:
             result = tones.index(low + "'")
-        if (eingestrichenes == True):
+        if (startInSmallOctave == True):
             bIndex = 0
             if ('bes' in tones):
                 bIndex = tones.index('bes')
             else:
                 bIndex = tones.index('b')
             if (result < bIndex):
-                result = result + self.__oktave
+                result = result + self.__octave
         # print(tonleiter, low, ':', tones, result)
         return result
-    # end getLowestNote
+    # end __getLowestNote
 
-    def __stricheToNummer(self, note: str) -> str:
+    def __toNumericOctave(self, note: str) -> str:
         result = note
         cnt = Counter(note)
         if ("'" in cnt):
             result = note.replace("'", '') + str(cnt["'"])
         #end if
         return result
-    #end stricheToNummer
+    #end __toNumericOctave
 
 # end class

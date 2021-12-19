@@ -8,8 +8,10 @@ class MuseScoreGenerator:
 
     #region private properties ################################################
     __config: Configuration
-    # Dictionary der enharmonische Töne, Schlüssel = Anzahl Halbtöne über C
-    # enthält auch die Pitchclass Werte für MuseScore
+    __helper: Helper
+
+    # Dictionary of enharmonics, the key is the number of halftones over C
+    # also includes the pitchclasses used by Musescore
     __enharmonicsTable = dict([
         (11, dict([('Aisis', 31), ('B', 19), ('Ces', 7)])),
         (10, dict([('Ais',   24), ('Bes', 12), ('Ceses', 0)])),
@@ -25,33 +27,32 @@ class MuseScoreGenerator:
         (0, dict([('Bis', 26), ('C', 14), ('Deses', 2)])),
     ])
 
-    # tabelle die eine Note (oktave inkl.) auf einen Pitch und Pitchclass mapt
+    # mapping of the notes to a pitch and pitchclass
     __pitchTable: dict
-    __helper: Helper
 
-    # tiefster Ton in Musescore für die Violine: G3 (wissenschäftlich) / g (in der kleinen Octave)
+
+    # lowest tone as Musescore value for the violin: G3 (scientific notation) / small g
     __lowestPitch = 55
-
-    # höchster Ton in Musescore für die Violine in der erste Lage: B5 / b'' (in der zweigestrichenen Oktave)
-    # auf Deutsch H5 / h''
+    # highest tone as Musescore value for the violin in first position: B5 / b''
+    # using German notation: H5 / h''
     __highestPitch = 83
 
     #endregion ################################################################
 
     #region public methods ####################################################
 
-    def generateIntervalle(self) -> list:
+    def generateIntervals(self) -> list:
         result = []
         for tonleiter in ['G', 'D', 'A', 'E']:
-            intervals = self.__helper.generateDurIntervalle(tonleiter)
+            intervals = self.__helper.generateMajorIntervals(tonleiter)
             for interval in intervals:
-                title = self.__helper.getIntervallTitel(interval[0], tonleiter)
+                title = self.__helper.getIntervalTitle(interval[0], tonleiter)
                 museScore = MuseScoreXml(self.__config)
                 museScore.addTitle(title)
                 museVoice = museScore.addNewMeasureWithVoice()
                 museScore.addTimeSignatureToVoice(museVoice, 9, 8)
                 museScore.addKeySignaturetoVoice(
-                    museVoice, self.__helper.generalvorzeichenDur[tonleiter])
+                    museVoice, self.__helper.majorScaleSignatures[tonleiter])
                 startPitch = self.__pitchTable[interval[1]]
                 endPitch = self.__pitchTable[interval[2]]
                 museScore.addSingleNoteToVoice(museVoice, startPitch[0],
@@ -61,7 +62,7 @@ class MuseScoreGenerator:
                                                endPitch[1], 'half')
 
                 generatedFile = '{0}/{1}.mscx'.format(
-                    self.__config.musescoreIntervalle,
+                    self.__config.musescoreIntervalsDirectory,
                     title.replace(' ', '-')).lower()
                 museScore.writeToFile(generatedFile)
                 result.append(['Musescore', generatedFile])
@@ -70,22 +71,22 @@ class MuseScoreGenerator:
         return result
     # end generateIntervals
 
-    def generateNoten(self) -> list:
+    def generateNotes(self) -> list:
         result = []
         allNotes = self.__helper.getAllViolinNotes()
         for notes in allNotes:
             museScore = MuseScoreXml(self.__config)
-            titel = self.__helper.getNoteTitel(notes)
+            titel = self.__helper.getNoteTitle(notes)
             museScore.addTitle(titel)
             museVoice = museScore.addNewMeasureWithVoice()
             museScore.addTimeSignatureToVoice(museVoice, 4, 4)
             museScore.addKeySignaturetoVoice(
-                museVoice, self.__helper.generalvorzeichenDur['C'])
+                museVoice, self.__helper.majorScaleSignatures['C'])
             pitch = self.__pitchTable[notes[0]]
             museScore.addSingleNoteToVoice(
                 museVoice, pitch[0], pitch[1], 'whole')
             generatedFile = '{0}/{1}.mscx'.format(
-                self.__config.musescoreNoten,
+                self.__config.musescoreNotesDirectory,
                 titel.replace(' ', '-')).lower()
             museScore.writeToFile(generatedFile)
             result.append(['Musescore', generatedFile])
@@ -93,15 +94,15 @@ class MuseScoreGenerator:
         # end for
 
         return result
-    # end generateNoten
+    # end generateNotes
 
-    def generateTonleiter(self) -> list:
+    def generateScales(self) -> list:
         return [
-            *self.__generateDurtonleiter(True),
-            *self.__generateDurtonleiter(False),
-            *self.__generateMoltonleiter()
+            *self.__generateMajorScales(True),
+            *self.__generateMajorScales(False),
+            *self.__generateMinorScales()
         ]
-    # end generateTonleiter
+    # end generateScales
 
     #endregion ################################################################
 
@@ -143,18 +144,18 @@ class MuseScoreGenerator:
         return result
     # end fillPitchTable
 
-    def __generateDurtonleiter(self, eingestrichenes: bool) -> list:
+    def __generateMajorScales(self, startInSmallOctave: bool) -> list:
         result = list()
-        for _, (tonleiter, generalVorzeichen) in enumerate(self.__helper.generalvorzeichenDur.items()):
-            asString = self.__helper.generateDurTonleiter(
-                tonleiter, eingestrichenes)
+        for _, (scale, signature) in enumerate(self.__helper.majorScaleSignatures.items()):
+            asString = self.__helper.generateMajorScale(
+                scale, startInSmallOctave)
             museScore = MuseScoreXml(self.__config)
-            title = self.__helper.getDurtonleiterTitel(
-                tonleiter, eingestrichenes)
+            title = self.__helper.getMajorScaleTitle(
+                scale, startInSmallOctave)
             museScore.addTitle(title)
             museVoice = museScore.addNewMeasureWithVoice()
             museScore.addTimeSignatureToVoice(museVoice, 4, 4)
-            museScore.addKeySignaturetoVoice(museVoice, generalVorzeichen)
+            museScore.addKeySignaturetoVoice(museVoice, signature)
 
             notesWritten = 0
             for note in asString:
@@ -179,19 +180,19 @@ class MuseScoreGenerator:
                     museScore.addRestToVoice(museVoice, 'quarter')
             #end if
             generatedFile = '{0}/{1}.mscx'.format(
-                self.__config.musescoreTonleiter,
+                self.__config.musescoreScalesDirectory,
                 title.replace(' ', '-')).lower()
 
             museScore.writeToFile(generatedFile)
             result.append(['Musescore', generatedFile])
         # end for
         return result
-    # end generateDurTonleiterExt
+    # end __generateMajorScales
 
-    def __generateMoltonleiter(self) -> list:
+    def __generateMinorScales(self) -> list:
         result = list()
         return result
-    # end generateMolTonleiter
+    # end __generateMinorScales
 
     #endregion ################################################################
 

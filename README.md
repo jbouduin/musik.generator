@@ -5,7 +5,7 @@ As I needed a lot of Images and mp3 files for my [Anki](https://apps.ankiweb.net
 
 ### Prerequisites:
 * the images are cropped to what is to be displayed
-* the images have a transparent background (usefull in dark-mode)
+* the images preferably have a transparent background (usefull in dark-mode)
 * the mp3 files use a standard pitch of 443Hz
 
 ### Result of my search
@@ -59,16 +59,18 @@ optional arguments:
 
 
 ## Todo's (in no particular order)
-- :x: add a parameter not to translate notes in German (or simply add a language parameter, defaulting to 'de')
-- :x: add CLI parameters to config.json and merge CLI args at runtime
+- :x: add a language parameter defaulting to 'de'
+- :x: add CLI parameter -s to config.json and merge CLI args at runtime
 - :white_check_mark: output subdir's should go into config.json
 - :white_check_mark: add a parameter for the standardpitch, default = 443
-- :x: add a parameter to skip files that already exist
+- :x: add a parameter --purge, -p to skip files that already exist
 - :white_check_mark: delete .pdf and .cropped.pdf lilypond generates as intermediate steps
+- :x: add a parameter which prevents deleting the intermediate files
 - :x: parameterized (default: false) delete of ly and mscx files after processing them
 - :x: add selection noten, tonleiter, intervalle
 - :x: Split helper into a musical helper and a text helper
 - :white_check_mark: get template file names from config
 - :x: parameterized purge of existing out directory before generating (mutually exclusive with skip existing files parameter)
-- :x: translate variables and methods to english
+- :white_check_mark: translate variables, methods and comments to english
+
 

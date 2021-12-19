@@ -1,10 +1,10 @@
 import argparse
 import pathlib
 import constants
+
 from configuration import Configuration
 from helper import Helper
 from fileProcessor import FileProcessor
-from lilypondgenerator import LilyPondGenerator
 from musicGenerator import MusicGenerator
 
 

@@ -13,8 +13,8 @@ class Configuration:
     __verbose: bool
     __outputDir: pathlib.Path
     __force: bool
-    __lilypond: bool
-    __musescore: bool
+    __generateLilypond: bool
+    __generateMusescore: bool
     __process: bool
     __standardPitch: int
     #endregion ################################################################
@@ -22,8 +22,8 @@ class Configuration:
     #region getters ###########################################################
 
     @property
-    def lilypond(self) -> bool:
-        return self.__lilypond
+    def generateLilypond(self) -> bool:
+        return self.__generateLilypond
     # end get lilypond
 
     @property
@@ -36,8 +36,8 @@ class Configuration:
     # end get lilypondExecutable
 
     @property
-    def musescore(self) -> bool:
-        return self.__musescore
+    def generateMusescore(self) -> bool:
+        return self.__generateMusescore
     # end get musescore
 
     @property
@@ -60,56 +60,56 @@ class Configuration:
     # end get outputDir
 
     @property
-    def lilypondNoten(self) -> str:
+    def lilypondNotesDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__lilypondDir,
-            self.__notenDir
+            self.__lilypondSubdirectory,
+            self.__notesSubdirectory
         )
     # end get lilypondNoten
 
     @property
-    def lilypondTonleiter(self) -> str:
+    def lilypondScalesDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__lilypondDir,
-            self.__tonleiterDir
+            self.__lilypondSubdirectory,
+            self.__scalesSubdirectory
         )
     # end get lilypondTonleiter
 
     @property
-    def lilypondIntervalle(self) -> str:
+    def lilypondIntervalsDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__lilypondDir,
-            self.__intervalleDir
+            self.__lilypondSubdirectory,
+            self.__intervalsSubdirectory
         )
     # end get lilypondIntervalle
 
     @property
-    def musescoreNoten(self) -> str:
+    def musescoreNotesDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__musescoreDir,
-            self.__notenDir
+            self.__musescoreSubdirectory,
+            self.__notesSubdirectory
         )
     # end get musescoreNoten
 
     @property
-    def musescoreTonleiter(self) -> str:
+    def musescoreScalesDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__musescoreDir,
-            self.__tonleiterDir
+            self.__musescoreSubdirectory,
+            self.__scalesSubdirectory
         )
     # end get musescoreTonleiter
 
     @property
-    def musescoreIntervalle(self) -> str:
+    def musescoreIntervalsDirectory(self) -> str:
         return '{0}/{1}/{2}'.format(
             self.rootOutput,
-            self.__musescoreDir,
-            self.__intervalleDir)
+            self.__musescoreSubdirectory,
+            self.__intervalsSubdirectory)
     # end get musescoreIntervalle
 
     @property
@@ -157,7 +157,7 @@ class Configuration:
     # end get __outputRoot
 
     @property
-    def __lilypondDir(self) -> str:
+    def __lilypondSubdirectory(self) -> str:
         result = 'lilypond'
         if ('output' in self.__configuration):
             if ('lilypond' in self.__configuration['output']):
@@ -166,7 +166,7 @@ class Configuration:
     # end get __lilypondDir
 
     @property
-    def __musescoreDir(self) -> str:
+    def __musescoreSubdirectory(self) -> str:
         result = 'musescore'
         if ('output' in self.__configuration):
             if ('musescore' in self.__configuration['output']):
@@ -175,29 +175,29 @@ class Configuration:
     # end get __lilypondDir
 
     @property
-    def __notenDir(self) -> str:
-        result = 'noten'
+    def __notesSubdirectory(self) -> str:
+        result = 'notes'
         if ('output' in self.__configuration):
-            if ('noten' in self.__configuration['output']):
-                result = self.__configuration['output']['noten']
+            if ('notes' in self.__configuration['output']):
+                result = self.__configuration['output']['notes']
         return result
     # end get __lilypondDir
 
     @property
-    def __tonleiterDir(self) -> str:
-        result = 'tonleiter'
+    def __scalesSubdirectory(self) -> str:
+        result = 'scales'
         if ('output' in self.__configuration):
-            if ('tonleiter' in self.__configuration['output']):
-                result = self.__configuration['output']['tonleiter']
+            if ('scales' in self.__configuration['output']):
+                result = self.__configuration['output']['scales']
         return result
     # end get __lilypondDir
 
     @property
-    def __intervalleDir(self) -> str:
-        result = 'intervalle'
+    def __intervalsSubdirectory(self) -> str:
+        result = 'intervals'
         if ('output' in self.__configuration):
-            if ('intervalle' in self.__configuration['output']):
-                result = self.__configuration['output']['intervalle']
+            if ('scales' in self.__configuration['output']):
+                result = self.__configuration['output']['intervals']
         return result
     # end get __lilypondDir
 
@@ -224,9 +224,9 @@ class Configuration:
             if (name == constants.argumentVerbose):
                 self.__verbose = value
             elif (name == constants.argumentTarget):
-                self.__lilypond = (value == constants.argumentTargetLilypond) or (
+                self.__generateLilypond = (value == constants.argumentTargetLilypond) or (
                     value == constants.argumentTargetAll)
-                self.__musescore = (value == constants.argumentTargetMusescore) or (
+                self.__generateMusescore = (value == constants.argumentTargetMusescore) or (
                     value == constants.argumentTargetAll)
             elif (name == constants.argumentOutputDir):
                 self.__outputDir = value
@@ -247,8 +247,8 @@ class Configuration:
 
         if (self.verbose == True):
             print('Verbose                 : {0}'.format(self.verbose))
-            print('Generate lilypond files : {0}'.format(self.lilypond))
-            print('Generate musescore files: {0}'.format(self.musescore))
+            print('Generate lilypond files : {0}'.format(self.generateLilypond))
+            print('Generate musescore files: {0}'.format(self.generateMusescore))
             print('Outputdir               : {0}'.format(
                 self.__outputDir.name))
             print('Process generated files : {0}'.format(self.process))
@@ -268,7 +268,7 @@ class Configuration:
             if (self.verbose == True):
                 print('Checking executables')
 
-            if (self.lilypond == True and self.process == True):
+            if (self.generateLilypond == True and self.process == True):
                 if (self.lilypondExecutable is None):
                     print('lilypond executable is not set')
                     result = False
@@ -279,7 +279,7 @@ class Configuration:
                 # end if
             # end if
 
-            if (self.musescore == True and self.process == True):
+            if (self.generateMusescore == True and self.process == True):
                 if (self.musescoreExecutable is None):
                     print('Musescore executable is not set')
                     result = False
@@ -314,13 +314,13 @@ class Configuration:
         if (self.verbose):
             print('Checking template files')
 
-        if (self.lilypond == True and not os.path.exists(self.lilypondTemplate)):
+        if (self.generateLilypond == True and not os.path.exists(self.lilypondTemplate)):
             print('Lilypond template file \'{0}\' does not exist'.format(
                 self.lilypondTemplate))
             result = False
         # end if
 
-        if (self.musescore == True and not os.path.exists(self.musescoreTemplate)):
+        if (self.generateMusescore == True and not os.path.exists(self.musescoreTemplate)):
             print('Musescore template file \'{0}\' does not exist'.format(
                 self.musescoreTemplate))
             result = False
@@ -330,14 +330,14 @@ class Configuration:
             print('Creating subdirectories')
         # end if
 
-        if (self.lilypond):
+        if (self.generateLilypond):
             self.__createSubdirectories(
-                [self.lilypondIntervalle, self.lilypondNoten, self.lilypondTonleiter])
+                [self.lilypondIntervalsDirectory, self.lilypondNotesDirectory, self.lilypondScalesDirectory])
         # end if
 
-        if (self.musescore):
+        if (self.generateMusescore):
             self.__createSubdirectories(
-                [self.musescoreIntervalle, self.musescoreNoten, self.musescoreTonleiter])
+                [self.musescoreIntervalsDirectory, self.musescoreNotesDirectory, self.musescoreScalesDirectory])
         # end if
 
         return result
