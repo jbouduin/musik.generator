@@ -1,4 +1,5 @@
 from collections import Counter
+from typing import List
 
 # TODO Split into a musical helper and a text helper
 class Helper:
@@ -69,19 +70,19 @@ class Helper:
     ])
 
     # intervals from the Major scale
-    __majorScaleIntervals = [2, 2, 1, 2, 2, 2, 1]
+    __majorScaleIntervals: List[int] = [2, 2, 1, 2, 2, 2, 1]
 
     # Notes used to generate a major scale with 0 to 5 ♯'s
-    __majorScaleNotes0to5Sharps = ['C', 'Cis', 'D', 'Dis', 'E',
+    __majorScaleNotes0to5Sharps: List[str] = ['C', 'Cis', 'D', 'Dis', 'E',
                     'F', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
     # Fis-Major (6♯) should use Eis instead of F
-    __majorScaleNotes6Sharps = ['C', 'Cis', 'D', 'Dis', 'E',
+    __majorScaleNotes6Sharps: List[str] = ['C', 'Cis', 'D', 'Dis', 'E',
                      'Eis', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
     # Notes used to generate a major scale with 0 to 5 ♭'s
-    __majorScaleNotes0to5Flats = ['C', 'Des', 'D', "Es", "E",
+    __majorScaleNotes0to5Flats: List[str] = ['C', 'Des', 'D', "Es", "E",
                     "F", "Ges", "G", "As", "A", "Bes", "B"]
     # Ges-Dur (6♭) soll Ces verwenden, statt B
-    __majorScaleNotes6Flats = ['C', 'Des', 'D', "Es", "E",
+    __majorScaleNotes6Flats: List[str] = ['C', 'Des', 'D', "Es", "E",
                      "F", "Ges", "G", "As", "A", "Bes", "Ces"]
 
     # chromatic scale with enharmonics, but without double sharp and double flats
@@ -108,7 +109,7 @@ class Helper:
     #region getters ###########################################################
 
     @property
-    def majorScaleIntervals(self) -> list:
+    def majorScaleIntervals(self) -> List[int]:
         return self.__majorScaleIntervals
     #end getter majorScaleIntervals
 

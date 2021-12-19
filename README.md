@@ -36,7 +36,7 @@ I used python, although I do not have a lot of experience with it.
 * run `generate.py`
 
 ```sh
-usage: generate.py [-h] [--config CONFIG] [--generate-only] [--output OUTPUT] [--force] [--standard-pitch STANDARD_PITCH] [--verbose] {all,musescore,lilypond}
+usage: generate.py [-h] [--config CONFIG] [--generate-only] [--output OUTPUT] [--force] [--standard-pitch STANDARD_PITCH] [--regenerate | --purge] [--verbose] {all,musescore,lilypond}
 
 Generate and process lilypond and musescore files.
 
@@ -54,6 +54,8 @@ optional arguments:
   --force, -f           Force creation of the output directory if it does not exist
   --standard-pitch STANDARD_PITCH, -s STANDARD_PITCH
                         The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]
+  --regenerate, -r      Regenerate existing files
+  --purge, -p           Purge targetted outputdirectories before generation
   --verbose, -v         Verbose
 ```
 
@@ -65,12 +67,12 @@ optional arguments:
 - :white_check_mark: get template file names from config
 - :white_check_mark: translate variables, methods and comments to english
 - :white_check_mark: add CLI parameter --standard-pitch, -s to config.json and merge CLI args at runtime
-- :x: parameterized (--purge, -p) purge of existing out directory before generating
-- :x: add a parameter to skip files that already exist (mutually exclusive with purge parameter)
-- :x: add a language parameter defaulting to 'de'
-- :x: add a parameter which prevents deleting the intermediate files
-- :x: parameterized (default: false) delete of ly and mscx files after processing them
-- :x: add selection noten, tonleiter, intervalle
+- :white_check_mark: add flag (--regenerate, -r) to regenerate files that already exist (mutually exclusive with purge parameter)
+- :white_check_mark: add a flag (--purge, -p) purge targetted out-directories before generating
+- :x: add a flag (--keep-intermediate, -k) which prevents deleting the intermediate files (.pdf and .cropped.pdf)
+- :x: parameterized (--clean-up, -c, default: false) delete of ly and mscx files after processing them, mutually exclusive with --generate-only)
+- :x: add selection notes, scales, intervals
 - :x: Split helper into a musical helper and a text helper
+- :x: add a language parameter (--language, - l) defaulting to 'de', goes into the config file also
 
 

@@ -1,4 +1,7 @@
 from os.path import abspath
+import pathlib
+from typing import List
+import constants
 from configuration import Configuration
 from helper import Helper
 from museScoreXml import MuseScoreXml
@@ -41,62 +44,69 @@ class MuseScoreGenerator:
 
     #region public methods ####################################################
 
-    def generateIntervals(self) -> list:
-        result = []
+    def generateIntervals(self) -> List[List[str]]:
+        result = list()
         for tonleiter in ['G', 'D', 'A', 'E']:
             intervals = self.__helper.generateMajorIntervals(tonleiter)
             for interval in intervals:
                 title = self.__helper.getIntervalTitle(interval[0], tonleiter)
-                museScore = MuseScoreXml(self.__config)
-                museScore.addTitle(title)
-                museVoice = museScore.addNewMeasureWithVoice()
-                museScore.addTimeSignatureToVoice(museVoice, 9, 8)
-                museScore.addKeySignaturetoVoice(
-                    museVoice, self.__helper.majorScaleSignatures[tonleiter])
-                startPitch = self.__pitchTable[interval[1]]
-                endPitch = self.__pitchTable[interval[2]]
-                museScore.addSingleNoteToVoice(museVoice, startPitch[0],
-                                               startPitch[1], 'half')
-                museScore.addRestToVoice(museVoice, 'eighth')
-                museScore.addSingleNoteToVoice(museVoice, endPitch[0],
-                                               endPitch[1], 'half')
-
                 generatedFile = '{0}/{1}.mscx'.format(
                     self.__config.musescoreIntervalsDirectory,
                     title.replace(' ', '-')).lower()
-                museScore.writeToFile(generatedFile)
-                result.append(['Musescore', generatedFile])
+                if (pathlib.Path(generatedFile).exists() == False or self.__config.regenerate == True):
+                    museScore = MuseScoreXml(self.__config)
+                    museScore.addTitle(title)
+                    museVoice = museScore.addNewMeasureWithVoice()
+                    museScore.addTimeSignatureToVoice(museVoice, 9, 8)
+                    museScore.addKeySignaturetoVoice(
+                        museVoice, self.__helper.majorScaleSignatures[tonleiter])
+                    startPitch = self.__pitchTable[interval[1]]
+                    endPitch = self.__pitchTable[interval[2]]
+                    museScore.addSingleNoteToVoice(museVoice, startPitch[0],
+                                                startPitch[1], 'half')
+                    museScore.addRestToVoice(museVoice, 'eighth')
+                    museScore.addSingleNoteToVoice(museVoice, endPitch[0],
+                                                endPitch[1], 'half')
+
+
+                    museScore.writeToFile(generatedFile)
+                    result.append([constants.keyMusescore, generatedFile])
+                else:
+                    result.append([constants.keySkipped, generatedFile])
             # end for
         # end for
         return result
     # end generateIntervals
 
-    def generateNotes(self) -> list:
-        result = []
+    def generateNotes(self) -> List[List[str]]:
+        result = list()
         allNotes = self.__helper.getAllViolinNotes()
         for notes in allNotes:
-            museScore = MuseScoreXml(self.__config)
-            titel = self.__helper.getNoteTitle(notes)
-            museScore.addTitle(titel)
-            museVoice = museScore.addNewMeasureWithVoice()
-            museScore.addTimeSignatureToVoice(museVoice, 4, 4)
-            museScore.addKeySignaturetoVoice(
-                museVoice, self.__helper.majorScaleSignatures['C'])
-            pitch = self.__pitchTable[notes[0]]
-            museScore.addSingleNoteToVoice(
-                museVoice, pitch[0], pitch[1], 'whole')
+            title = self.__helper.getNoteTitle(notes)
             generatedFile = '{0}/{1}.mscx'.format(
                 self.__config.musescoreNotesDirectory,
-                titel.replace(' ', '-')).lower()
-            museScore.writeToFile(generatedFile)
-            result.append(['Musescore', generatedFile])
+                title.replace(' ', '-')).lower()
+            if (pathlib.Path(generatedFile).exists() == False or self.__config.regenerate == True):
+                museScore = MuseScoreXml(self.__config)
+                museScore.addTitle(title)
+                museVoice = museScore.addNewMeasureWithVoice()
+                museScore.addTimeSignatureToVoice(museVoice, 4, 4)
+                museScore.addKeySignaturetoVoice(
+                    museVoice, self.__helper.majorScaleSignatures['C'])
+                pitch = self.__pitchTable[notes[0]]
+                museScore.addSingleNoteToVoice(
+                    museVoice, pitch[0], pitch[1], 'whole')
 
+                museScore.writeToFile(generatedFile)
+                result.append([constants.keyMusescore, generatedFile])
+            else:
+                result.append([constants.keySkipped, generatedFile])
         # end for
 
         return result
     # end generateNotes
 
-    def generateScales(self) -> list:
+    def generateScales(self) -> List[List[str]]:
         return [
             *self.__generateMajorScales(True),
             *self.__generateMajorScales(False),
@@ -144,52 +154,56 @@ class MuseScoreGenerator:
         return result
     # end fillPitchTable
 
-    def __generateMajorScales(self, startInSmallOctave: bool) -> list:
+    def __generateMajorScales(self, startInSmallOctave: bool) -> List[List[str]]:
         result = list()
         for _, (scale, signature) in enumerate(self.__helper.majorScaleSignatures.items()):
-            asString = self.__helper.generateMajorScale(
-                scale, startInSmallOctave)
-            museScore = MuseScoreXml(self.__config)
             title = self.__helper.getMajorScaleTitle(
                 scale, startInSmallOctave)
-            museScore.addTitle(title)
-            museVoice = museScore.addNewMeasureWithVoice()
-            museScore.addTimeSignatureToVoice(museVoice, 4, 4)
-            museScore.addKeySignaturetoVoice(museVoice, signature)
-
-            notesWritten = 0
-            for note in asString:
-                currentPitch = self.__pitchTable[note]
-                if (museVoice is None):
-                    museVoice = museScore.addNewMeasureWithVoice()
-                museScore.addSingleNoteToVoice(museVoice, currentPitch[0],
-                                               currentPitch[1], 'quarter')
-                notesWritten = notesWritten + 1
-                if (notesWritten == 4):
-                    notesWritten = 0
-                    museVoice = None
-            # end for
-
-            if notesWritten > 0:
-                if notesWritten == 1:
-                    museScore.addRestToVoice(museVoice, 'quarter')
-                    museScore.addRestToVoice(museVoice, 'half')
-                elif notesWritten == 2:
-                    museScore.addRestToVoice(museVoice, 'half')
-                elif notesWritten == 3:
-                    museScore.addRestToVoice(museVoice, 'quarter')
-            #end if
             generatedFile = '{0}/{1}.mscx'.format(
                 self.__config.musescoreScalesDirectory,
                 title.replace(' ', '-')).lower()
 
-            museScore.writeToFile(generatedFile)
-            result.append(['Musescore', generatedFile])
+            if (pathlib.Path(generatedFile).exists() == False or self.__config.regenerate == True):
+                museScore = MuseScoreXml(self.__config)
+                museScore.addTitle(title)
+                museVoice = museScore.addNewMeasureWithVoice()
+                museScore.addTimeSignatureToVoice(museVoice, 4, 4)
+                museScore.addKeySignaturetoVoice(museVoice, signature)
+
+                asString = self.__helper.generateMajorScale(
+                    scale, startInSmallOctave)
+                notesWritten = 0
+                for note in asString:
+                    currentPitch = self.__pitchTable[note]
+                    if (museVoice is None):
+                        museVoice = museScore.addNewMeasureWithVoice()
+                    museScore.addSingleNoteToVoice(museVoice, currentPitch[0],
+                                                currentPitch[1], 'quarter')
+                    notesWritten = notesWritten + 1
+                    if (notesWritten == 4):
+                        notesWritten = 0
+                        museVoice = None
+                # end for
+
+                if notesWritten > 0:
+                    if notesWritten == 1:
+                        museScore.addRestToVoice(museVoice, 'quarter')
+                        museScore.addRestToVoice(museVoice, 'half')
+                    elif notesWritten == 2:
+                        museScore.addRestToVoice(museVoice, 'half')
+                    elif notesWritten == 3:
+                        museScore.addRestToVoice(museVoice, 'quarter')
+                #end if
+
+                museScore.writeToFile(generatedFile)
+                result.append([constants.keyMusescore, generatedFile])
+            else:
+                result.append([constants.keySkipped, generatedFile])
         # end for
         return result
     # end __generateMajorScales
 
-    def __generateMinorScales(self) -> list:
+    def __generateMinorScales(self) -> List[List[str]]:
         result = list()
         return result
     # end __generateMinorScales

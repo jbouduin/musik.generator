@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-
+import constants
 from configuration import Configuration
 
 # TODO parameterized (default: false) delete of ly and mscx files after processing them
@@ -18,11 +18,11 @@ class FileProcessor:
     def processFiles(self, files: list) -> None:
         if (self.__config.lilypondExecutable is not None):
             self.__processLilyFiles(list(
-                filter(lambda lst: lst[0] == 'Lilypond', files)))
+                filter(lambda lst: lst[0] == constants.keyLilipond, files)))
         # end if
         if (self.__config.musescoreExecutable is not None):
             self.__processMuseFiles(list(
-                filter(lambda lst: lst[0] == 'Musescore', files)))
+                filter(lambda lst: lst[0] == constants.keyMusescore, files)))
     # end processFiles
 
     #endregion ################################################################

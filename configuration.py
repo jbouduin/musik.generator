@@ -16,7 +16,9 @@ class Configuration:
     __generateLilypond: bool
     __generateMusescore: bool
     __process: bool
-    __standardPitch: int = None
+    __purge: bool
+    __regenerate: bool
+    __standardPitch: int
     #endregion ################################################################
 
     #region getters ###########################################################
@@ -144,6 +146,11 @@ class Configuration:
         return result
     # end get lilypondTemplate(self)
 
+    @property
+    def regenerate(self) -> str:
+        return self.__regenerate
+    # end get regenerate
+
     #endregion ################################################################
 
     # region private getters
@@ -211,7 +218,10 @@ class Configuration:
     # endregion
 
     #region constructor #######################################################
-
+    def __init__(self) -> None:
+        self.__purge = False
+        self.__regenerate = False
+        self.__standardPitch = None
     # end constructor
 
     #endregion ################################################################
@@ -236,6 +246,10 @@ class Configuration:
                 self.__process = not value
             elif (name == constants.argumentToItem(constants.argumentStandardPitch)):
                 self.__standardPitch = value
+            elif (name == constants.argumentRegenerate):
+                self.__regenerate = value
+            elif (name == constants.argumentPurge):
+                self.__purge = value
         # end for
 
         if (self.__outputDir is None):
@@ -261,6 +275,8 @@ class Configuration:
             print('Outputdir               : {0}'.format(
                 self.__outputDir.name))
             print('Process generated files : {0}'.format(self.process))
+            print('Purge                   : {0}'.format(
+                self.__purge))
             print('Lilypond executable     : {0}'.format(
                 self.lilypondExecutable))
             print('Lilypond template       : {0}'.format(
@@ -269,7 +285,7 @@ class Configuration:
                 self.musescoreExecutable))
             print('Musescore template      : {0}'.format(
                 self.musescoreTemplate))
-            print('Standard pitch          : {0} Hz.'.format(
+            print('Standard pitch          : {0} Hz'.format(
                 self.standardPitch))
         # end if verbose
 
@@ -335,7 +351,20 @@ class Configuration:
             result = False
         # end if
 
-        if (self.verbose):
+        if (self.__purge == True):
+            if (self.generateLilypond):
+                self.__rmdir('{0}/{1}'.format(
+                    self.rootOutput,
+                    self.__lilypondSubdirectory))
+            # end if
+            if (self.generateMusescore):
+                self.__rmdir('{0}/{1}'.format(
+                    self.rootOutput,
+                    self.__musescoreSubdirectory))
+            # end if
+        # end if
+
+        if (self.verbose == True):
             print('Creating subdirectories')
         # end if
 
@@ -367,5 +396,17 @@ class Configuration:
         # end for
     # end __createSubdirectories
 
-    # endregion
+    def __rmdir(self, directory) -> None:
+        directory = pathlib.Path(directory)
+        if (directory.exists()):
+            for item in directory.iterdir():
+                if item.is_dir():
+                    self.__rmdir(item)
+                else:
+                    item.unlink()
+            # end for
+            directory.rmdir()
+        #end if
+    # end __rmdir
+
 # end class

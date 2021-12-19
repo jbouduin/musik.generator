@@ -54,6 +54,23 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
         help='The standard pitch (a.k.a. Kammerton) when generating mp3-files. [Default = 443]'
     )
 
+    group = parser.add_mutually_exclusive_group()
+    # regenerate
+    group.add_argument(
+        '--{0}'.format(constants.argumentRegenerate), '-r',
+        action='store_true',
+        help='Regenerate existing files'
+    )
+
+    # purge
+    group.add_argument(
+        '--{0}'.format(constants.argumentPurge), '-p',
+        action='store_true',
+        help='Purge targetted outputdirectories before generation'
+    )
+
+    # TODO add selection noten, tonleiter, intervalle
+
     # verbose
     parser.add_argument(
         '--{0}'.format(constants.argumentVerbose), '-v',
@@ -61,7 +78,6 @@ def __buildArgumentParser() -> argparse.ArgumentParser:
         help='Verbose'
     )
 
-    # TODO add selection noten, tonleiter, intervalle
     return parser
 
 # end __setupArgParser

@@ -1,3 +1,5 @@
+from typing import Counter, List
+import constants
 from configuration import Configuration
 from helper import Helper
 from lilypondgenerator import LilyPondGenerator
@@ -13,9 +15,9 @@ class MusicGenerator:
 
     #region public methods ####################################################
 
-    def generate(self) -> list:
-        lilypondResult = []
-        musescoreResult = []
+    def generate(self) -> List[List[str]]:
+        lilypondResult = list()
+        musescoreResult = list()
 
         if(self.__configuration.generateLilypond):
             lilypondGenerator = LilyPondGenerator(
@@ -35,6 +37,15 @@ class MusicGenerator:
                 *museScoreGenerator.generateScales()
             ]
 
+        self.__dumpGenerationResults(
+            lilypondResult, constants.keySkipped, 'Skipped {0} existing Lilypond file(s)')
+        self.__dumpGenerationResults(
+            lilypondResult, constants.keyLilipond, 'Generated {0} Lilypond file(s)')
+        self.__dumpGenerationResults(
+            musescoreResult, constants.keySkipped, 'Skipped {0} existing Musescore file(s)')
+        self.__dumpGenerationResults(
+            musescoreResult, constants.keyMusescore, 'Generated {0} Musescore file(s)')
+
         return [
             *lilypondResult,
             *musescoreResult
@@ -51,5 +62,14 @@ class MusicGenerator:
     # end constructor
 
     #endregion ################################################################
+
+    #region private methods ###################################################
+    def __dumpGenerationResults(self, listValue: list, filterValue: str, message: str) -> None:
+        counter = list(
+            filter(lambda lst: lst[0] == filterValue, listValue))
+        if (len(counter) > 0):
+            print(message.format(len(counter)))
+    # end __dumpGenerationResults
+    # endregion
 
 # end class
