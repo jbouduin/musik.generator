@@ -1,7 +1,8 @@
 import pathlib
 from typing import List
-import constants
+
 from configuration import Configuration
+import constants
 from helper import Helper
 from lilypondLy import LilypondLy
 
@@ -17,15 +18,15 @@ class LilyPondGenerator:
 
     def generateIntervals(self) -> List[List[str]]:
         result = list()
-        for tonleiter in ['G', 'C', 'D', 'A', 'E']:
-            intervals = self.__helper.generateMajorIntervals(tonleiter)
+        for scale in ['G', 'C', 'D', 'A', 'E']:
+            intervals = self.__helper.generateMajorIntervals(scale)
             for interval in intervals:
-                title = self.__helper.getIntervalTitle(interval[0], tonleiter)
+                title = self.__helper.getIntervalTitle(interval[0], scale)
                 generatedFile = '{0}/{1}.ly'.format(
                     self.__config.lilypondIntervalsDirectory,
                     title.replace(' ', '-')).lower()
                 if (pathlib.Path(generatedFile).exists() == False or self.__config.regenerate == True):
-                    lyFile = LilypondLy(self.__config, tonleiter, True, '9/8')
+                    lyFile = LilypondLy(self.__config, scale, True, '9/8')
                     lyFile.setTitle(title)
                     lyFile.makeMoment = '1/8'
                     lyFile.addNotes(
@@ -81,8 +82,9 @@ class LilyPondGenerator:
 
     def generateScales(self) -> List[List[str]]:
         return [
-            *self.__generateMajorScales(True),
-            *self.__generateMajorScales(False),
+            *self.__generateMajorScales(constants.ScaleGenerationType.Short),
+            *self.__generateMajorScales(constants.ScaleGenerationType.FromTonic),
+            *self.__generateMajorScales(constants.ScaleGenerationType.Full),
             *self.__generateAllScaleSignatures()
         ]
     # end generateScales
@@ -100,15 +102,14 @@ class LilyPondGenerator:
 
     #region private methods ###################################################
 
-    def __generateMajorScales(self, startInSmallOctave: bool) -> List[List[str]]:
+    def __generateMajorScales(self, generationType: constants.ScaleGenerationType) -> List[List[str]]:
         result = list()
         for _, scale in enumerate(self.__helper.majorScaleSignatures.keys()):
             title = self.__helper.getMajorScaleTitle(
-                scale, startInSmallOctave)
+                scale, generationType)
             generatedFile = '{0}/{1}.ly'.format(
                 self.__config.lilypondScalesDirectory,
                 title.replace(' ', '-')).lower()
-
             if (pathlib.Path(generatedFile).exists() == False or self.__config.regenerate == True):
                 lyFile = LilypondLy(self.__config, scale, True, '4/4')
                 lyFile.setTitle(title)
@@ -116,7 +117,7 @@ class LilyPondGenerator:
                 melodyLine = []
                 noteLine = []
                 asString = self.__helper.generateMajorScale(
-                    scale, startInSmallOctave)
+                    scale, generationType)
 
                 for note in asString:
                     melodyLine.append(note)

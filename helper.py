@@ -1,7 +1,11 @@
 from collections import Counter
 from typing import List
 
+from constants import ScaleGenerationType
+
 # TODO Split into a musical helper and a text helper
+
+
 class Helper:
 
     #region private properties ################################################
@@ -74,16 +78,16 @@ class Helper:
 
     # Notes used to generate a major scale with 0 to 5 ♯'s
     __majorScaleNotes0to5Sharps: List[str] = ['C', 'Cis', 'D', 'Dis', 'E',
-                    'F', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
+                                              'F', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
     # Fis-Major (6♯) should use Eis instead of F
     __majorScaleNotes6Sharps: List[str] = ['C', 'Cis', 'D', 'Dis', 'E',
-                     'Eis', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
+                                           'Eis', 'Fis', 'G', 'Gis', 'A', 'Ais', 'B']
     # Notes used to generate a major scale with 0 to 5 ♭'s
     __majorScaleNotes0to5Flats: List[str] = ['C', 'Des', 'D', "Es", "E",
-                    "F", "Ges", "G", "As", "A", "Bes", "B"]
+                                             "F", "Ges", "G", "As", "A", "Bes", "B"]
     # Ges-Dur (6♭) soll Ces verwenden, statt B
     __majorScaleNotes6Flats: List[str] = ['C', 'Des', 'D', "Es", "E",
-                     "F", "Ges", "G", "As", "A", "Bes", "Ces"]
+                                          "F", "Ges", "G", "As", "A", "Bes", "Ces"]
 
     # chromatic scale with enharmonics, but without double sharp and double flats
     __chromatic = [
@@ -111,26 +115,27 @@ class Helper:
     @property
     def majorScaleIntervals(self) -> List[int]:
         return self.__majorScaleIntervals
-    #end getter majorScaleIntervals
+    # end getter majorScaleIntervals
 
     @property
     def majorScaleSignatures(self) -> dict:
         return self.__majorScalesSignatures
-    #end getter majorScaleSignatures
+    # end getter majorScaleSignatures
 
     @property
     def minorScalesSignatures(self) -> dict:
         return self.__minorScalesSignatures
-    #end getter minorScalesSignatures
+    # end getter minorScalesSignatures
 
     #endregion ################################################################
 
     #region public methods ####################################################
 
-    def generateMajorIntervals(self, tonleiter: str) -> list:
+    def generateMajorIntervals(self, scale: str) -> list:
         result = []
-        tonesToUse = self.__getMajorTonesToUse(tonleiter)
-        firstNoteIndex = self.__getLowestNote(tonesToUse, tonleiter, True)
+        tonesToUse = self.__getMajorTonesToUse(scale)
+        firstNoteIndex = self.__getLowestNote(
+            tonesToUse, scale, ScaleGenerationType.Short)
         firstNote = tonesToUse[firstNoteIndex]
         noteIndex = firstNoteIndex
         totalInterval = 0
@@ -145,17 +150,48 @@ class Helper:
         return result
     # end generateMajorIntervals
 
-    def generateMajorScale(self, scale: str, startInSmallOctave: bool = False) -> list:
+    def generateMajorScale(self, scale: str, scaleGenerationType: ScaleGenerationType) -> list:
         tonesToUse = self.__getMajorTonesToUse(scale)
-        noteIndex = self.__getLowestNote(tonesToUse, scale, startInSmallOctave)
+        noteIndex = self.__getLowestNote(
+            tonesToUse, scale, scaleGenerationType)
         result = [tonesToUse[noteIndex]]
         # print(noteIndex, tonesToUse[noteIndex], tonesToUse)
         totalInterval = 0
+
+        if (scaleGenerationType == ScaleGenerationType.Full):
+            # TODO calculate
+            signature = self.__majorScalesSignatures[scale]
+            shift = 4
+            if (signature == 1):
+                shift = 0
+            elif (signature == 2):
+                shift = 3
+            elif (signature == 3 or signature == -4):
+                shift = 6
+            elif (signature == 4 or signature == -3):
+                shift = 2
+            elif (signature == 5 or signature == -2):
+                shift = 5
+            elif (signature == 6 or signature == -1):
+                shift = 1
+            elif (signature == -5):
+                shift = 4
+            elif (signature == -6):
+                shift = 1
+
+            intervalsToUse = [
+                *self.__majorScaleIntervals[shift::],
+                *self.__majorScaleIntervals[0:shift]
+            ]
+            # print(signature, shift, self.__majorScaleIntervals, '->', intervalsToUse)
+        else:
+            intervalsToUse = self.__majorScaleIntervals
+        # end if
         while True:
-            for interval in self.__majorScaleIntervals:
+            for interval in intervalsToUse:
                 noteIndex = noteIndex + interval
                 totalInterval = totalInterval + interval
-                if ((noteIndex >= len(tonesToUse)) or (startInSmallOctave == True and totalInterval > 12)):
+                if ((noteIndex >= len(tonesToUse)) or (scaleGenerationType == ScaleGenerationType.Short and totalInterval > 12)):
                     break
                 result.append(tonesToUse[noteIndex])
             # end for
@@ -175,24 +211,27 @@ class Helper:
             for note in self.__chromatic[index]:
                 if (note == 'Ces'):
                     suffix = suffix + "'"
-                #end if
+                # end if
                 resultNote = note.lower() + suffix
                 if (resultNote == self.__highestnote):
                     finished = True
-                #end if
+                # end if
                 entry.append(resultNote)
             index = index + 1
             if (index == len(self.__chromatic)):
                 index = 0
 
             result.append(entry)
-        #end while
+        # end while
         return result
-    #end getAllViolinNotes
+    # end getAllViolinNotes
 
-    def getMajorScaleTitle(self, scale: str, startInSmallOctave: bool) -> str:
-        if (startInSmallOctave == True):
+    def getMajorScaleTitle(self, scale: str, generationType: ScaleGenerationType) -> str:
+        if (generationType == ScaleGenerationType.Short):
             titel = 'Kurzer Tonleiter in {0}-Dur'.format(
+                self.getGermanNotation(scale))
+        elif (generationType == ScaleGenerationType.FromTonic):
+            titel = 'Tonleiter ab dem Grundton in {0}-Dur'.format(
                 self.getGermanNotation(scale))
         else:
             titel = 'Ganzer Tonleiter auf der Violine in {0}-Dur'.format(
@@ -234,9 +273,9 @@ class Helper:
             result = 'Note {0}-{1}'.format(
                 self.getGermanNotation(notes[0], False, True).lower(),
                 self.getGermanNotation(notes[1], False, True).lower())
-        #end if-else
+        # end if-else
         return result
-    #end getNoteTitle
+    # end getNoteTitle
 
     #endregion ################################################################
 
@@ -316,22 +355,43 @@ class Helper:
         return tonesToUse
     # end __getMajorTonesToUse
 
-    def __getLowestNote(self, tones: list, scale: str, startInSmallOctave: bool = False) -> int:
+    def __getLowestNote(self, tones: list, scale: str, generationType: ScaleGenerationType) -> int:
         result = 0
-        low = str(scale).lower()
-        if (low in tones):
+        if (generationType == ScaleGenerationType.Full):
+            # check if we have g or gis in the scal
+            signature = self.__majorScalesSignatures[scale]
+            if (signature >= 3):
+                low = 'gis'
+            elif (signature <= -5):
+                low = 'as'
+            else:
+                low = 'g'
+            # end if-else
             result = tones.index(low)
         else:
-            result = tones.index(low + "'")
-        if (startInSmallOctave == True):
-            bIndex = 0
-            if ('bes' in tones):
-                bIndex = tones.index('bes')
+            low = str(scale).lower()
+            if (low in tones):
+                result = tones.index(low)
             else:
-                bIndex = tones.index('b')
-            if (result < bIndex):
-                result = result + self.__octave
-        # print(tonleiter, low, ':', tones, result)
+                result = tones.index(low + "'")
+            if (generationType == ScaleGenerationType.Short):
+                bIndex = 0
+                if ('bes' in tones):
+                    bIndex = tones.index('bes')
+                else:
+                    bIndex = tones.index('b')
+                if (result < bIndex):
+                    result = result + self.__octave
+            # end if
+        # end if-else
+
+        # print('{0} {1} {2} ({3}): {4}'.format(
+        #     str(generationType),
+        #     scale,
+        #     low,
+        #     result,
+        #     ' - '.join(tones).strip(' - '))
+        # )
         return result
     # end __getLowestNote
 
@@ -340,8 +400,8 @@ class Helper:
         cnt = Counter(note)
         if ("'" in cnt):
             result = note.replace("'", '') + str(cnt["'"])
-        #end if
+        # end if
         return result
-    #end __toNumericOctave
+    # end __toNumericOctave
 
 # end class

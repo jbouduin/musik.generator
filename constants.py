@@ -1,4 +1,6 @@
 
+from enum import Enum, auto
+
 def argumentToItem(argument: str) -> str:
     return argument.replace('-', '_')
 # end argumentToItem
@@ -27,3 +29,14 @@ argumentLanguageEn: str = 'en'
 keyLilipond: str = 'Lilypond'
 keyMusescore: str = 'Musescore'
 keySkipped: str = 'Skipped'
+
+class ScaleGenerationType(Enum):
+    Short = 1
+    FromTonic = 2
+    Full = 3
+
+    def __str__(self):
+        return self.name
+# end class
+
+

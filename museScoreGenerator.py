@@ -13,6 +13,12 @@ class MuseScoreGenerator:
     __config: Configuration
     __helper: Helper
 
+    # length values for museScore (to avoid typo's)
+    __whole:str = 'whole'
+    __half: str = 'half'
+    __quarter: str = 'quarter'
+    __eighth: str = 'eighth'
+
     # Dictionary of enharmonics, the key is the number of halftones over C
     # also includes the pitchclasses used by Musescore
     __enharmonicsTable = dict([
@@ -63,10 +69,10 @@ class MuseScoreGenerator:
                     startPitch = self.__pitchTable[interval[1]]
                     endPitch = self.__pitchTable[interval[2]]
                     museScore.addSingleNoteToVoice(museVoice, startPitch[0],
-                                                startPitch[1], 'half')
-                    museScore.addRestToVoice(museVoice, 'eighth')
+                                                startPitch[1], self.__half)
+                    museScore.addRestToVoice(museVoice, self.__eighth)
                     museScore.addSingleNoteToVoice(museVoice, endPitch[0],
-                                                endPitch[1], 'half')
+                                                endPitch[1], self.__half)
 
 
                     museScore.writeToFile(generatedFile)
@@ -95,7 +101,7 @@ class MuseScoreGenerator:
                     museVoice, self.__helper.majorScaleSignatures['C'])
                 pitch = self.__pitchTable[notes[0]]
                 museScore.addSingleNoteToVoice(
-                    museVoice, pitch[0], pitch[1], 'whole')
+                    museVoice, pitch[0], pitch[1],self.__whole)
 
                 museScore.writeToFile(generatedFile)
                 result.append([constants.keyMusescore, generatedFile])
@@ -108,8 +114,9 @@ class MuseScoreGenerator:
 
     def generateScales(self) -> List[List[str]]:
         return [
-            *self.__generateMajorScales(True),
-            *self.__generateMajorScales(False),
+            *self.__generateMajorScales(constants.ScaleGenerationType.Short),
+            *self.__generateMajorScales(constants.ScaleGenerationType.FromTonic),
+            *self.__generateMajorScales(constants.ScaleGenerationType.Full),
             *self.__generateMinorScales()
         ]
     # end generateScales
@@ -154,11 +161,11 @@ class MuseScoreGenerator:
         return result
     # end fillPitchTable
 
-    def __generateMajorScales(self, startInSmallOctave: bool) -> List[List[str]]:
+    def __generateMajorScales(self, generationType: constants.ScaleGenerationType) -> List[List[str]]:
         result = list()
         for _, (scale, signature) in enumerate(self.__helper.majorScaleSignatures.items()):
             title = self.__helper.getMajorScaleTitle(
-                scale, startInSmallOctave)
+                scale, generationType)
             generatedFile = '{0}/{1}.mscx'.format(
                 self.__config.musescoreScalesDirectory,
                 title.replace(' ', '-')).lower()
@@ -171,14 +178,14 @@ class MuseScoreGenerator:
                 museScore.addKeySignaturetoVoice(museVoice, signature)
 
                 asString = self.__helper.generateMajorScale(
-                    scale, startInSmallOctave)
+                    scale, generationType)
                 notesWritten = 0
                 for note in asString:
                     currentPitch = self.__pitchTable[note]
                     if (museVoice is None):
                         museVoice = museScore.addNewMeasureWithVoice()
                     museScore.addSingleNoteToVoice(museVoice, currentPitch[0],
-                                                currentPitch[1], 'quarter')
+                                                currentPitch[1], self.__quarter)
                     notesWritten = notesWritten + 1
                     if (notesWritten == 4):
                         notesWritten = 0
@@ -187,12 +194,12 @@ class MuseScoreGenerator:
 
                 if notesWritten > 0:
                     if notesWritten == 1:
-                        museScore.addRestToVoice(museVoice, 'quarter')
-                        museScore.addRestToVoice(museVoice, 'half')
+                        museScore.addRestToVoice(museVoice, self.__quarter)
+                        museScore.addRestToVoice(museVoice, self.__half)
                     elif notesWritten == 2:
-                        museScore.addRestToVoice(museVoice, 'half')
+                        museScore.addRestToVoice(museVoice, self.__half)
                     elif notesWritten == 3:
-                        museScore.addRestToVoice(museVoice, 'quarter')
+                        museScore.addRestToVoice(museVoice, self.__quarter)
                 #end if
 
                 museScore.writeToFile(generatedFile)
